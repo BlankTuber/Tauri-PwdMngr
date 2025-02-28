@@ -10,7 +10,7 @@
     justify-content: center;
 }
 
-/* Blob background for forms */
+/* Blob background for forms - MADE BIGGER */
 #loginInput::before,
 #registerInput::before {
     content: "";
@@ -18,8 +18,8 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 100%;
-    height: 100%;
+    width: 120%; /* Increased from 100% */
+    height: 120%; /* Increased from 100% */
     background: linear-gradient(
         135deg,
         rgba(15, 30, 50, 0.7) 0%,

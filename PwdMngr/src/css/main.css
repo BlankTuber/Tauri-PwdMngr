@@ -17,19 +17,27 @@
         letter-spacing: 0.12em;
     }
 
-    /* More prominent animations on desktop */
-    @keyframes subtleFloat {
-        0%,
-        100% {
-            transform: translateY(0);
+    /* More fluid animation for h1 on desktop */
+    @keyframes fluidFloat {
+        0% {
+            transform: translateY(0) translateX(0) rotate(0deg);
+        }
+        25% {
+            transform: translateY(-5px) translateX(3px) rotate(0.5deg);
         }
         50% {
-            transform: translateY(-5px);
+            transform: translateY(-8px) translateX(0) rotate(0deg);
+        }
+        75% {
+            transform: translateY(-3px) translateX(-2px) rotate(-0.5deg);
+        }
+        100% {
+            transform: translateY(0) translateX(0) rotate(0deg);
         }
     }
 
     h1 {
-        animation: subtleFloat 5s ease-in-out infinite;
+        animation: fluidFloat 8s ease-in-out infinite;
     }
 }
 :root {
@@ -111,6 +119,27 @@ h1 {
     display: inline-block;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
     width: 100%;
+    /* Improved animation for h1 */
+    animation: fluidFloat 8s ease-in-out infinite;
+}
+
+/* New, more fluid animation for h1 */
+@keyframes fluidFloat {
+    0% {
+        transform: translateY(0) translateX(0) rotate(0deg);
+    }
+    25% {
+        transform: translateY(-5px) translateX(3px) rotate(0.5deg);
+    }
+    50% {
+        transform: translateY(-8px) translateX(0) rotate(0deg);
+    }
+    75% {
+        transform: translateY(-3px) translateX(-2px) rotate(-0.5deg);
+    }
+    100% {
+        transform: translateY(0) translateX(0) rotate(0deg);
+    }
 }
 
 h1::after {
@@ -259,18 +288,25 @@ label {
 
 /* Animated blob backgrounds */
 @keyframes blobAnimation {
-    0%,
-    100% {
+    0% {
         border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+        transform: translate(-50%, -50%) rotate(0deg);
     }
     25% {
         border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+        transform: translate(-52%, -48%) rotate(1deg);
     }
     50% {
         border-radius: 50% 60% 30% 60% / 40% 50% 60% 50%;
+        transform: translate(-49%, -51%) rotate(-1deg);
     }
     75% {
         border-radius: 40% 60% 50% 40% / 60% 40% 60% 40%;
+        transform: translate(-48%, -50%) rotate(0deg);
+    }
+    100% {
+        border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+        transform: translate(-50%, -50%) rotate(0deg);
     }
 }
 
