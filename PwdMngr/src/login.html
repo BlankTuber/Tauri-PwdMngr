@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Password Manager</title>
+
+        <link rel="stylesheet" href="/css/main.css">
+        <link rel="stylesheet" href="/css/auth.css">
+        <script src="/js/login.js"></script>
+    </head>
+    <body>
+        <h1>Password Manager Login</h1>
+        <div id="loginInput">
+            <div class="inputs">
+                <label for="username">Username: </label>
+                <input type="text" name="username" id="usernameInput" placeholder="CoolGuy123">
+            </div>
+            <div class="inputs">
+                <label for="password">Password: </label>
+                <input type="password" name="password" id="passwordInput" placeholder="********">
+            </div>
+        </div>
+        <button id="submitBtn" onclick="loginUser()">Login</button>
+        <a href="/register.html">Register a new user instead</a>
+    </body>
+</html>
