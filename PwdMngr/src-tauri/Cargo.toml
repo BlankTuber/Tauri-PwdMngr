@@ -23,4 +23,14 @@ tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tauri-plugin-sql = { version = "2", features = ["sqlite"] }
+uuid = { version = "1.15.1", features = ["serde", "v4"] }
+tokio = { version = "1.43.0", features = ["full"] }
+sqlx = { version = "0.8.3", features = ["chrono", "json", "runtime-tokio", "tls-rustls", "uuid"] }
+chrono = { version = "0.4.40", features = ["serde"] }
+argon2 = "0.5.3"
+rand = "0.9.0"
+ring = "0.17.11"
+base64 = "0.22.1"
+thiserror = "2.0.11"
+anyhow = "1.0.96"
 
