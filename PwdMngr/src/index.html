@@ -1,18 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Password Manager</title>
-
-        <link rel="stylesheet" href="/css/main.css" />
-        <link rel="stylesheet" href="/css/index.css" />
+        <link rel="stylesheet" href="/css/main.css">
+        <link rel="stylesheet" href="/css/index.css">
         <script src="/js/main.js"></script>
     </head>
     <body>
-        <h1>
-            Welcome
-            <p id="userHere"></p>
-        </h1>
+        <nav>
+            <header>
+                <button>Add Password</button>
+                <h1>PwdMngr</h1>
+                <button>Logout</button>
+            </header>
+            <search>
+                <input type="text" name="searchInput" id="searchInput" placeholder="Search...">
+                <button>🔍</button>
+                <select name="filter" id="filter">
+                    <option value="Category1">Category1</option>
+                    <option value="Category2">Category2</option>
+                    <option value="Category3">Category3</option>
+                    <option value="Category4">Category4</option>
+                </select>
+            </search>
+        </nav>
+        <main>
+            <section id="passwordList">
+                <article class="password">
+                    <p class="website">https://example.com</p>
+                    <p class="username">Username</p>
+                    <p class="notes">Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime magnam asperiores dolore sint ratione, debitis facere autem hic enim nobis dolor. Aspernatur, magni. Officia sit assumenda ducimus maxime nobis esse?</p>
+                    <p class="lastUpdated"><time datetime="1234-12-12 12:12">12. Dec, 1234 (12:12)</time></p>
+                    <div class="actions">
+                        <button>Copy</button>
+                        <button>Edit</button>
+                    </div>
+                </article>
+            </section>
+            <section id="pagination">
+                <button>&LeftArrow;</button>
+                <p>x of y</p>
+                <button>&RightArrow;</button>
+            </section>
+        </main>
     </body>
 </html>
