@@ -13,6 +13,15 @@ pub enum CryptoError {
     
     #[error("Key derivation failed: {0}")]
     KeyDerivationError(String),
+
+    #[error("Encryption failed: {0}")]
+    EncryptionError(String),
+
+    #[error("Decryption failed: {0}")]
+    DecryptionError(String),
+
+    #[error("Verification failed: {0}")]
+    VerifyError(String),
 }
 
 const KEY_LEN: usize = 32;
@@ -72,4 +81,16 @@ pub fn verify_password(password: &str, stored_hash: &str) -> Result<bool, Crypto
         Err(_) => Ok(false),
     }
 
+}
+
+pub fn encrypt(input: &str, user_id: &str) -> Result<String, CryptoError> {
+    if input.is_empty() {
+        return Err(CryptoError::EncryptionError("Input cannot be empty".into()));
+    }
+
+    if user_id.is_empty() {
+        return Err(CryptoError::EncryptionError("User ID cannot be empty".into()));
+    }
+
+    Ok("Cool".into())
 }

@@ -108,3 +108,50 @@ pub async fn logout_user(user_state: State<'_, UserState>) -> Result<JsonValue, 
         "message": "Logout successful!"
     }))
 }
+
+#[tauri::command]
+pub async fn new_password(user_state: State<'_, UserState>, pool: State<'_, DatabasePool>, website: String, web_uri: Option<String>, username: String, password: String, notes: Option<String>) -> Result<JsonValue, String> {
+    if user_state::require_authentication(&user_state).is_err() {
+        return Err("Not authenticated".into());
+    }
+    
+    if website.trim().is_empty() {
+        return Err("Website cannot be empty".into());
+    }
+    
+    if username.trim().is_empty() {
+        return Err("Username cannot be empty".into());
+    }
+    
+    if password.trim().is_empty() {
+        return Err("Password cannot be empty".into());
+    }
+
+    let user_id = user_state::get_current_user(&user_state).unwrap();
+    let now = Utc::now();
+    let password_id = Uuid::new_v4().to_string();
+
+    let encrypted_username = crypto::encrypt(&username, &user_id)
+        .map_err(|e| format!("Failed to encrypt username: {}", e))?;
+
+    let encrypted_password = crypto::encrypt(&password, &user_id)
+        .map_err(|e| format!("Failed to encrypt password: {}", e))?;
+
+    sqlx::query("INSERT INTO passwords (id, user_id, website, website_url, encrypted_username, encrypted_password, notes, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+        .bind(&password_id)
+        .bind(&user_id)
+        .bind(&website)
+        .bind(&web_uri)
+        .bind(&encrypted_username)
+        .bind(&encrypted_password)
+        .bind(&notes)
+        .bind(now)
+        .bind(now)
+        .execute(&*pool.0)
+        .await
+        .map_err(|e| format!("Failed to create password: {}", e))?;
+    
+    Ok(json!({
+        "message": "Password successfully saved!"
+    }))
+}
