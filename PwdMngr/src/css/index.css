@@ -1,0 +1,311 @@
+/* Container sizing */
+.container {
+    width: var(--container-width);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1rem, 3vh, 2rem);
+}
+
+/* Navigation and header */
+nav {
+    background: rgba(10, 20, 35, 0.6);
+    border-radius: clamp(8px, 1.5vw, 16px);
+    padding: clamp(1rem, 2vh, 1.5rem);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2),
+                inset 0 2px 0 rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(66, 184, 131, 0.2);
+    margin-bottom: clamp(1rem, 3vh, 2rem);
+}
+
+nav header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: clamp(1rem, 2vh, 1.5rem);
+    position: relative;
+}
+
+nav h1 {
+    margin: 0;
+    font-size: clamp(1.2rem, 3vw, 2rem);
+    letter-spacing: 0.1em;
+}
+
+.action-btn {
+    background: linear-gradient(135deg, var(--highlight-color), var(--accent-color-2));
+    font-size: clamp(0.8rem, 1vw, 0.9rem);
+    min-width: clamp(100px, 15vw, 150px);
+}
+
+#logoutBtn {
+    background: linear-gradient(135deg, var(--accent-color), var(--highlight-color));
+}
+
+/* Search section */
+.search-container {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+#searchInput {
+    flex: 1;
+    margin-bottom: 0;
+    border-radius: clamp(4px, 1vh, 8px) 0 0 clamp(4px, 1vh, 8px);
+    border-right: none;
+}
+
+#searchBtn {
+    background-color: var(--highlight-color);
+    padding: clamp(0.6rem, 1.5vh, 1rem);
+    border-radius: 0 clamp(4px, 1vh, 8px) clamp(4px, 1vh, 8px) 0;
+    margin: 0;
+    min-width: unset;
+    box-shadow: none;
+}
+
+#filter {
+    width: clamp(120px, 20%, 200px);
+    margin-bottom: 0;
+    background-color: rgba(10, 22, 40, 0.7);
+    border: none;
+    border-bottom: 3px solid var(--accent-color-2);
+}
+
+/* Main content area */
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1.5rem, 3vh, 2.5rem);
+}
+
+/* Password list */
+#passwordList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: clamp(1rem, 2vw, 1.5rem);
+}
+
+.password-card {
+    background: rgba(10, 20, 35, 0.7);
+    border-radius: clamp(8px, 1vw, 12px);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(66, 184, 131, 0.2);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.password-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+    border-color: var(--accent-color-2);
+}
+
+.password-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(90deg, var(--accent-color), var(--highlight-color));
+    opacity: 0.8;
+    transition: height 0.3s ease;
+}
+
+.password-card:hover::before {
+    height: 7px;
+}
+
+.password-header {
+    padding: clamp(1rem, 2vh, 1.5rem);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.website {
+    font-size: clamp(1rem, 1.2vw, 1.2rem);
+    font-weight: bold;
+    margin: 0;
+    color: var(--contrast-color);
+    margin-bottom: 0.3rem;
+}
+
+.username {
+    font-size: clamp(0.8rem, 1vw, 0.9rem);
+    margin: 0;
+    color: var(--text-color);
+    opacity: 0.9;
+}
+
+.password-body {
+    padding: clamp(1rem, 2vh, 1.5rem);
+    flex: 1;
+}
+
+.notes {
+    margin: 0;
+    font-size: clamp(0.8rem, 1vw, 0.9rem);
+    line-height: 1.5;
+    color: var(--text-color);
+    opacity: 0.8;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.password-footer {
+    padding: clamp(0.8rem, 1.5vh, 1.2rem);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.last-updated {
+    font-size: clamp(0.7rem, 0.8vw, 0.8rem);
+    margin: 0;
+    color: var(--text-color);
+    opacity: 0.6;
+}
+
+.actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.actions button {
+    font-size: clamp(0.7rem, 0.8vw, 0.8rem);
+    padding: clamp(0.3rem, 0.8vh, 0.5rem) clamp(0.8rem, 1.2vw, 1rem);
+    min-width: unset;
+    background-color: rgba(66, 184, 131, 0.2);
+    border: 1px solid rgba(66, 184, 131, 0.3);
+}
+
+.copy-btn {
+    background-color: rgba(15, 158, 234, 0.2) !important;
+    border: 1px solid rgba(15, 158, 234, 0.3) !important;
+}
+
+.copy-btn:hover, .edit-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* Pagination */
+#pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(1rem, 2vw, 2rem);
+    padding: clamp(0.8rem, 1.5vh, 1.2rem);
+    margin-top: auto;
+}
+
+#pagination p {
+    font-size: clamp(0.9rem, 1vw, 1rem);
+    margin: 0;
+    color: var(--text-color);
+}
+
+.pagination-btn {
+    font-size: clamp(1rem, 1.2vw, 1.2rem);
+    padding: clamp(0.3rem, 0.8vh, 0.5rem) clamp(0.8rem, 1.2vw, 1rem);
+    min-width: unset;
+    background: linear-gradient(135deg, var(--highlight-color), var(--accent-color-2));
+    border-radius: 50%;
+    width: clamp(2.5rem, 3vw, 3rem);
+    height: clamp(2.5rem, 3vw, 3rem);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    nav header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    nav header button {
+        width: 100%;
+    }
+    
+    .search-container {
+        flex-direction: column;
+    }
+    
+    #searchInput, #searchBtn, #filter {
+        width: 100%;
+        border-radius: clamp(4px, 1vh, 8px);
+    }
+    
+    #passwordList {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 992px) {
+    #passwordList {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1400px) {
+    #passwordList {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Animations for cards */
+@keyframes cardPulse {
+    0% {
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    }
+    50% {
+        box-shadow: 0 10px 30px rgba(66, 184, 131, 0.3);
+    }
+    100% {
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    }
+}
+
+.password-card:nth-child(3n+1) {
+    animation: cardPulse 4s infinite;
+    animation-delay: 0s;
+}
+
+.password-card:nth-child(3n+2) {
+    animation: cardPulse 4s infinite;
+    animation-delay: 1.3s;
+}
+
+.password-card:nth-child(3n+3) {
+    animation: cardPulse 4s infinite;
+    animation-delay: 2.6s;
+}
+
+/* Empty state */
+#passwordList:empty::after {
+    content: "No passwords found. Click 'Add Password' to create one.";
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    width: 100%;
+    color: var(--text-color);
+    opacity: 0.6;
+    font-size: clamp(1rem, 1.2vw, 1.2rem);
+    text-align: center;
+    border: 2px dashed rgba(66, 184, 131, 0.3);
+    border-radius: clamp(8px, 1vw, 12px);
+    grid-column: 1 / -1;
+}

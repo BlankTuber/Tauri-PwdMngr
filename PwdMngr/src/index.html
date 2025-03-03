@@ -9,41 +9,67 @@
         <script src="/js/main.js"></script>
     </head>
     <body>
-        <nav>
-            <header>
-                <button>Add Password</button>
-                <h1>PwdMngr</h1>
-                <button>Logout</button>
-            </header>
-            <search>
-                <input type="text" name="searchInput" id="searchInput" placeholder="Search...">
-                <button>🔍</button>
-                <select name="filter" id="filter">
-                    <option value="Category1">Category1</option>
-                    <option value="Category2">Category2</option>
-                    <option value="Category3">Category3</option>
-                    <option value="Category4">Category4</option>
-                </select>
-            </search>
-        </nav>
-        <main>
-            <section id="passwordList">
-                <article class="password">
-                    <p class="website">https://example.com</p>
-                    <p class="username">Username</p>
-                    <p class="notes">Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime magnam asperiores dolore sint ratione, debitis facere autem hic enim nobis dolor. Aspernatur, magni. Officia sit assumenda ducimus maxime nobis esse?</p>
-                    <p class="lastUpdated"><time datetime="1234-12-12 12:12">12. Dec, 1234 (12:12)</time></p>
-                    <div class="actions">
-                        <button>Copy</button>
-                        <button>Edit</button>
-                    </div>
-                </article>
-            </section>
-            <section id="pagination">
-                <button>&LeftArrow;</button>
-                <p>x of y</p>
-                <button>&RightArrow;</button>
-            </section>
-        </main>
+        <div class="container">
+            <nav>
+                <header>
+                    <button id="addPasswordBtn" class="action-btn">Add Password</button>
+                    <h1>PwdMngr</h1>
+                    <button id="logoutBtn" class="action-btn">Logout</button>
+                </header>
+                <div class="search-container">
+                    <input type="text" name="searchInput" id="searchInput" placeholder="Search...">
+                    <button id="searchBtn">🔍</button>
+                    <select name="filter" id="filter">
+                        <option value="all">All Categories</option>
+                        <option value="Category1">Category1</option>
+                        <option value="Category2">Category2</option>
+                        <option value="Category3">Category3</option>
+                        <option value="Category4">Category4</option>
+                    </select>
+                </div>
+            </nav>
+            <main>
+                <section id="passwordList">
+                    <article class="password-card">
+                        <div class="password-header">
+                            <p class="website">example.com</p>
+                            <p class="username">Username</p>
+                        </div>
+                        <div class="password-body">
+                            <p class="notes">Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime magnam asperiores dolore sint ratione.</p>
+                        </div>
+                        <div class="password-footer">
+                            <p class="last-updated"><time datetime="2025-03-01T12:12">Mar 1, 2025</time></p>
+                            <div class="actions">
+                                <button class="copy-btn">Copy</button>
+                                <button class="edit-btn">Edit</button>
+                            </div>
+                        </div>
+                    </article>
+                    
+                    <article class="password-card">
+                        <div class="password-header">
+                            <p class="website">github.com</p>
+                            <p class="username">devUser</p>
+                        </div>
+                        <div class="password-body">
+                            <p class="notes">Development account credentials.</p>
+                        </div>
+                        <div class="password-footer">
+                            <p class="last-updated"><time datetime="2025-02-28T15:30">Feb 28, 2025</time></p>
+                            <div class="actions">
+                                <button class="copy-btn">Copy</button>
+                                <button class="edit-btn">Edit</button>
+                            </div>
+                        </div>
+                    </article>
+                </section>
+                <section id="pagination">
+                    <button class="pagination-btn">&laquo;</button>
+                    <p>1 of 3</p>
+                    <button class="pagination-btn">&raquo;</button>
+                </section>
+            </main>
+        </div>
     </body>
 </html>
