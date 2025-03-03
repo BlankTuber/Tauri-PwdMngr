@@ -39,10 +39,10 @@ pub fn hash_password(password: &str) -> Result<String, CryptoError> {
 }
 
 pub fn generate_encryption_key(password: &str) -> Result<String, CryptoError> {
-    let rng = ring::rand::SystemRandom::new();
-    let mut salt = [0u8; SALT_LEN];
-    ring::rand::SecureRandom::fill(&rng, &mut salt)
-        .map_err(|_| CryptoError::KeyDerivationError("Failed to generate salt".into()))?;
+    let salt_input = format!("salt-prefix-{}", password);
+    
+    let salt = ring::digest::digest(&ring::digest::SHA256, salt_input.as_bytes());
+    let salt_bytes = &salt.as_ref()[0..SALT_LEN];
     
     let mut key = [0u8; KEY_LEN];
     let iterations = 100_000;
@@ -50,13 +50,13 @@ pub fn generate_encryption_key(password: &str) -> Result<String, CryptoError> {
     pbkdf2::derive(
         pbkdf2::PBKDF2_HMAC_SHA256,
         iterations.try_into().unwrap(),
-        &salt,
+        salt_bytes,
         password.as_bytes(),
         &mut key,
     );
     
     let mut result = Vec::with_capacity(SALT_LEN + KEY_LEN);
-    result.extend_from_slice(&salt);
+    result.extend_from_slice(salt_bytes);
     result.extend_from_slice(&key);
     
     Ok(BASE64.encode(result))

@@ -30,11 +30,11 @@ pub async fn register_user(pool: tauri::State<'_, DatabasePool>, username: Strin
     let password_hash = crypto::hash_password(&password)
         .map_err(|e| format!("Password hashing error: {}", e))?;
     
-    let user_id = Uuid::new_v4();
+    let user_id = Uuid::new_v4().to_string();
     let now = Utc::now();
     
     sqlx::query("INSERT INTO users (id, username, password_hash, created_at, updated_at) VALUES (?, ?, ?, ?, ?)")
-        .bind(user_id.to_string())
+        .bind(user_id)
         .bind(&username)
         .bind(&password_hash)
         .bind(now)
