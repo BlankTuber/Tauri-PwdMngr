@@ -8,6 +8,7 @@
 
 /* Navigation and header */
 nav {
+    width: 80%;
     background: rgba(10, 20, 35, 0.6);
     border-radius: clamp(8px, 1.5vw, 16px);
     padding: clamp(1rem, 2vh, 1.5rem);
@@ -35,7 +36,7 @@ nav h1 {
 .action-btn {
     background: linear-gradient(135deg, var(--highlight-color), var(--accent-color-2));
     font-size: clamp(0.8rem, 1vw, 0.9rem);
-    min-width: clamp(100px, 15vw, 150px);
+    min-width: clamp(125px, 15vw, 175px);
 }
 
 #logoutBtn {
@@ -73,6 +74,11 @@ nav h1 {
     border-bottom: 3px solid var(--accent-color-2);
 }
 
+select{
+    flex: 0.5;
+    color: var(--bg-color);
+}
+
 /* Main content area */
 main {
     flex: 1;
@@ -83,9 +89,13 @@ main {
 
 /* Password list */
 #passwordList {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
     gap: clamp(1rem, 2vw, 1.5rem);
+    width: clamp(50%, 90%, 95%);
+    margin: auto;
 }
 
 .password-card {
@@ -98,6 +108,9 @@ main {
     border: 1px solid rgba(66, 184, 131, 0.2);
     transition: all 0.3s ease;
     position: relative;
+    flex-grow: 1;
+    width: clamp(200px, 30%, 300px);
+    height: 250px;
 }
 
 .password-card:hover {
@@ -247,22 +260,6 @@ main {
         width: 100%;
         border-radius: clamp(4px, 1vh, 8px);
     }
-    
-    #passwordList {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (min-width: 768px) and (max-width: 992px) {
-    #passwordList {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (min-width: 1400px) {
-    #passwordList {
-        grid-template-columns: repeat(4, 1fr);
-    }
 }
 
 /* Animations for cards */
@@ -307,5 +304,4 @@ main {
     text-align: center;
     border: 2px dashed rgba(66, 184, 131, 0.3);
     border-radius: clamp(8px, 1vw, 12px);
-    grid-column: 1 / -1;
 }
