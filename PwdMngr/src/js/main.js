@@ -11,3 +11,7 @@ function logout() {
     console.log(response);
     window.location.href = "/login.html";
 }
+
+function newPassword() {
+    window.location.href = "/add-password.html";
+}
