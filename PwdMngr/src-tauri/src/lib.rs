@@ -3,16 +3,19 @@ pub mod commands;
 pub mod db;
 pub mod crypto;
 pub mod models;
+pub mod user_state;
 
-use commands::register_user;
-use commands::login_user;
+use commands::{register_user, login_user, logout_user};
 
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 use sqlx::SqlitePool;
 use tauri::{async_runtime, Manager, generate_handler};
 
 #[derive(Clone)]
 pub struct DatabasePool(Arc<SqlitePool>);
+
+#[derive(Default, Clone)]
+pub struct UserState(pub Arc<Mutex<Option<String>>>);
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -27,12 +30,14 @@ pub fn run() {
             });
             
             app.manage(DatabasePool(Arc::new(pool)));
+            app.manage(UserState::default());
             
             Ok(())
         })
         .invoke_handler(generate_handler![
             register_user,
-            login_user
+            login_user,
+            logout_user
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

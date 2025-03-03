@@ -1,10 +1,15 @@
-use crate::{models::User, crypto, DatabasePool};
+use crate::{models::User, crypto, DatabasePool, UserState, user_state};
 use uuid::Uuid;
 use chrono::Utc;
 use serde_json::{json, Value as JsonValue};
+use tauri::State;
 
 #[tauri::command]
-pub async fn register_user(pool: tauri::State<'_, DatabasePool>, username: String, password: String, confirm_password: String) -> Result<JsonValue, String> {
+pub async fn register_user(pool: State<'_, DatabasePool>, user_state: State<'_, UserState>, username: String, password: String, confirm_password: String) -> Result<JsonValue, String> {
+    if user_state::require_no_authentication(&user_state).is_err() {
+        return Err("Already authenticated".into());
+    }
+    
     if username.trim().is_empty() {
         return Err("Username cannot be empty".into());
     }
@@ -34,7 +39,7 @@ pub async fn register_user(pool: tauri::State<'_, DatabasePool>, username: Strin
     let now = Utc::now();
     
     sqlx::query("INSERT INTO users (id, username, password_hash, created_at, updated_at) VALUES (?, ?, ?, ?, ?)")
-        .bind(user_id)
+        .bind(&user_id)
         .bind(&username)
         .bind(&password_hash)
         .bind(now)
@@ -46,6 +51,8 @@ pub async fn register_user(pool: tauri::State<'_, DatabasePool>, username: Strin
     let encrypted_key = crypto::generate_encryption_key(&password)
         .map_err(|e| format!("Failed to generate encryption key: {}", e))?;
     
+    user_state::set_current_user(&user_state, user_id);
+
     Ok(json!({
         "encKey": encrypted_key,
         "message": "User successfully registered!"
@@ -53,7 +60,11 @@ pub async fn register_user(pool: tauri::State<'_, DatabasePool>, username: Strin
 }
 
 #[tauri::command]
-pub async fn login_user(pool: tauri::State<'_, DatabasePool>, username: String, password: String) -> Result<JsonValue, String> {
+pub async fn login_user(pool: State<'_, DatabasePool>, user_state: State<'_, UserState>, username: String, password: String) -> Result<JsonValue, String> {
+    if user_state::require_no_authentication(&user_state).is_err() {
+        return Err("Already authenticated".into());
+    }
+
     if username.trim().is_empty() {
         return Err("Username cannot be empty".into());
     }
@@ -81,9 +92,19 @@ pub async fn login_user(pool: tauri::State<'_, DatabasePool>, username: String, 
     
     let encrypted_key = crypto::generate_encryption_key(&password)
         .map_err(|e| format!("Failed to generate encryption key: {}", e))?;
-    
+
+    user_state::set_current_user(&user_state, existing_user.id.clone());
+
     Ok(json!({
         "encKey": encrypted_key,
         "message": "Login successful!"
+    }))
+}
+
+#[tauri::command]
+pub async fn logout_user(user_state: State<'_, UserState>) -> Result<JsonValue, String> {
+    user_state::clear_current_user(&user_state);
+    Ok(json!({
+        "message": "Logout successful!"
     }))
 }
