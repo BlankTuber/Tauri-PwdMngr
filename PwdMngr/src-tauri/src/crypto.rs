@@ -1,9 +1,9 @@
 use argon2::{
-    password_hash::{PasswordHasher, SaltString},
+    password_hash::{PasswordHasher, SaltString, PasswordVerifier, PasswordHash},
     Argon2,
 };
 use ring::pbkdf2;
-use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
+use base64::{Engine as _, engine::general_purpose::URL_SAFE_NO_PAD as BASE64};
 use thiserror::Error;
 
 #[derive(Debug, Error)]
@@ -60,4 +60,16 @@ pub fn generate_encryption_key(password: &str) -> Result<String, CryptoError> {
     result.extend_from_slice(&key);
     
     Ok(BASE64.encode(result))
+}
+
+pub fn verify_password(password: &str, stored_hash: &str) -> Result<bool, CryptoError> {
+    let parsed_hash = PasswordHash::new(stored_hash).map_err(|e| CryptoError::HashingError(format!("Invalid password hash: {}", e)))?;
+
+    let new_argon2 = Argon2::default();
+
+    match new_argon2.verify_password(password.as_bytes(), &parsed_hash) {
+        Ok(()) => Ok(true),
+        Err(_) => Ok(false),
+    }
+
 }

@@ -51,3 +51,39 @@ pub async fn register_user(pool: tauri::State<'_, DatabasePool>, username: Strin
         "message": "User successfully registered!"
     }))
 }
+
+#[tauri::command]
+pub async fn login_user(pool: tauri::State<'_, DatabasePool>, username: String, password: String) -> Result<JsonValue, String> {
+    if username.trim().is_empty() {
+        return Err("Username cannot be empty".into());
+    }
+    if password.trim().is_empty() {
+        return Err("Password cannot be empty".into());
+    }
+    
+    let existing_user = sqlx::query_as::<_, User>("SELECT * FROM users WHERE username = ?")
+        .bind(&username)
+        .fetch_optional(&*pool.0)
+        .await
+        .map_err(|e| format!("Database error: {}", e))?;
+    
+    let existing_user = match existing_user {
+        Some(user) => user,
+        None => return Err("Username does not exist".into()),
+    };
+    
+    let is_correct_pwd = crypto::verify_password(&password, &existing_user.password_hash)
+        .map_err(|e| format!("Password verification error: {}", e))?;
+    
+    if !is_correct_pwd {
+        return Err("Password does not match!".into());
+    }
+    
+    let encrypted_key = crypto::generate_encryption_key(&password)
+        .map_err(|e| format!("Failed to generate encryption key: {}", e))?;
+    
+    Ok(json!({
+        "encKey": encrypted_key,
+        "message": "Login successful!"
+    }))
+}

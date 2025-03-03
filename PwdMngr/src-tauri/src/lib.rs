@@ -4,9 +4,12 @@ pub mod db;
 pub mod crypto;
 pub mod models;
 
+use commands::register_user;
+use commands::login_user;
+
 use std::sync::Arc;
 use sqlx::SqlitePool;
-use tauri::{async_runtime, Manager};
+use tauri::{async_runtime, Manager, generate_handler};
 
 #[derive(Clone)]
 pub struct DatabasePool(Arc<SqlitePool>);
@@ -27,7 +30,10 @@ pub fn run() {
             
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![])
+        .invoke_handler(generate_handler![
+            register_user,
+            login_user
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
