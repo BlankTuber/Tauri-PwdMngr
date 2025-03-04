@@ -1,4 +1,4 @@
-use crate::{models::User, crypto, DatabasePool, UserState, user_state};
+use crate::{models::User, models::PasswordRecord, crypto, DatabasePool, UserState, user_state};
 use uuid::Uuid;
 use chrono::Utc;
 use serde_json::{json, Value as JsonValue};
@@ -110,7 +110,7 @@ pub async fn logout_user(user_state: State<'_, UserState>) -> Result<JsonValue, 
 }
 
 #[tauri::command]
-pub async fn new_password(user_state: State<'_, UserState>, pool: State<'_, DatabasePool>, website: String, web_uri: Option<String>, username: String, password: String, notes: Option<String>, enc_key: String) -> Result<JsonValue, String> {
+pub async fn new_password(user_state: State<'_, UserState>, pool: State<'_, DatabasePool>, website: String, website_url: Option<String>, username: String, password: String, notes: Option<String>, enc_key: String) -> Result<JsonValue, String> {
     if user_state::require_authentication(&user_state).is_err() {
         return Err("Not authenticated".into());
     }
@@ -141,7 +141,7 @@ pub async fn new_password(user_state: State<'_, UserState>, pool: State<'_, Data
         .bind(&password_id)
         .bind(&user_id)
         .bind(&website)
-        .bind(&web_uri)
+        .bind(&website_url)
         .bind(&encrypted_username)
         .bind(&encrypted_password)
         .bind(&notes)
@@ -153,5 +153,62 @@ pub async fn new_password(user_state: State<'_, UserState>, pool: State<'_, Data
     
     Ok(json!({
         "message": "Password successfully saved!"
+    }))
+}
+
+#[tauri::command]
+pub async fn get_passwords(
+    user_state: State<'_, UserState>, 
+    pool: State<'_, DatabasePool>, 
+    page: i32,
+    enc_key: String
+) -> Result<JsonValue, String> {
+    if user_state::require_authentication(&user_state).is_err() {
+        return Err("Not authenticated".into());
+    }
+    
+    let user_id = user_state::get_current_user(&user_state).unwrap();
+    let page_size = 6;
+    let offset = (page - 1) * page_size;
+    
+    let total_count = sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM passwords WHERE user_id = ?")
+        .bind(&user_id)
+        .fetch_one(&*pool.0)
+        .await
+        .map_err(|e| format!("Failed to count passwords: {}", e))?;
+    
+    let passwords = sqlx::query_as::<_, PasswordRecord>("
+        SELECT id, website, website_url, encrypted_username, encrypted_password, notes, updated_at 
+        FROM passwords 
+        WHERE user_id = ? 
+        ORDER BY updated_at DESC
+        LIMIT ? OFFSET ?
+    ")
+    .bind(&user_id)
+    .bind(page_size)
+    .bind(offset)
+    .fetch_all(&*pool.0)
+    .await
+    .map_err(|e| format!("Failed to fetch passwords: {}", e))?;
+    
+    let total_pages = (total_count as f64 / page_size as f64).ceil() as i32;
+    
+    let password_list: Vec<JsonValue> = passwords.into_iter().map(|password| {
+        json!({
+            "id": password.id,
+            "website": password.website,
+            "website_url": password.website_url,
+            "username": crypto::decrypt(&password.encrypted_username, &enc_key),
+            "password": crypto::decrypt(&password.encrypted_password, &enc_key),
+            "notes": password.notes,
+            "updated_at": password.updated_at.to_rfc3339()
+        })
+    }).collect();
+    
+    Ok(json!({
+        "passwords": password_list,
+        "total": total_count,
+        "page": page,
+        "total_pages": total_pages
     }))
 }

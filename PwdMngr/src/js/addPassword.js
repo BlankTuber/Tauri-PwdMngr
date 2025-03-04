@@ -34,7 +34,7 @@ async function addNewPassword() {
     const encKey = sessionStorage.getItem("encKey");
 
     const website = document.getElementById("websiteInput").value.trim();
-    const websiteUrl = document.getElementById("websiteUrlInput").value.trim();
+    const website_url = document.getElementById("websiteUrlInput").value.trim();
     const username = document.getElementById("usernameInput").value.trim();
     const password = document.getElementById("passwordInput").value;
     const notes = document.getElementById("notesInput").value.trim();
@@ -43,7 +43,7 @@ async function addNewPassword() {
         return showError("Make sure all required fields are filled in!");
     }
 
-    if (websiteUrl && !isValidUrl(websiteUrl)) {
+    if (website_url && !isValidUrl(website_url)) {
         return showError("You need to use a valid URL");
     }
 
@@ -63,7 +63,7 @@ async function addNewPassword() {
         encKey,
     };
 
-    if (websiteUrl) params.web_uri = websiteUrl;
+    if (website_url) params.website_url = website_url;
     if (notes) params.notes = notes;
 
     const result = await invoke("new_password", params);

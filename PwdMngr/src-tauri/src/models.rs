@@ -25,3 +25,14 @@ pub struct Password {
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
+
+#[derive(Debug, Serialize, Deserialize, FromRow)]
+pub struct PasswordRecord {
+    pub id: String,
+    pub website: String,
+    pub website_url: Option<String>,
+    pub encrypted_username: String,
+    pub encrypted_password: String,
+    pub notes: Option<String>,
+    pub updated_at: DateTime<Utc>,
+}

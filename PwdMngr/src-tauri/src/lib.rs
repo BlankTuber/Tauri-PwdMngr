@@ -4,7 +4,7 @@ pub mod crypto;
 pub mod models;
 pub mod user_state;
 
-use commands::{register_user, login_user, logout_user, new_password};
+use commands::{register_user, login_user, logout_user, new_password, get_passwords};
 
 use std::sync::{Arc, Mutex};
 use sqlx::SqlitePool;
@@ -37,7 +37,8 @@ pub fn run() {
             register_user,
             login_user,
             logout_user,
-            new_password
+            new_password,
+            get_passwords
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -6,9 +6,10 @@ use arrayref::array_ref;
 use ring::{pbkdf2, aead, rand};
 use ring::aead::{LessSafeKey, AES_256_GCM, UnboundKey, Nonce};
 use base64::{Engine as _, engine::general_purpose::URL_SAFE_NO_PAD as BASE64};
+use serde::Serialize;
 use thiserror::Error;
 
-#[derive(Debug, Error)]
+#[derive(Debug, Error, Serialize)]
 pub enum CryptoError {
     #[error("Failed to hash password: {0}")]
     HashingError(String),
