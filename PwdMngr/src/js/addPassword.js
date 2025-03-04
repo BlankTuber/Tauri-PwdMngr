@@ -87,15 +87,83 @@ function cancelForm() {
     location.href = "/";
 }
 
+function checkPasswordStrength(password) {
+    const strengthIndicator = document.getElementById("passwordStrength");
+    const strengthLabel = document.getElementById("strengthLabel");
+
+    if (!password) {
+        strengthIndicator.style.width = "0%";
+        strengthIndicator.style.backgroundColor = "#ff6b6b";
+        strengthLabel.textContent = "Password Strength";
+        return;
+    }
+
+    let strength = 0;
+
+    if (password.length >= 8) {
+        strength += 25;
+    } else if (password.length >= 6) {
+        strength += 10;
+    }
+
+    if (password.match(/[a-z]/)) strength += 10;
+    if (password.match(/[A-Z]/)) strength += 15;
+    if (password.match(/[0-9]/)) strength += 15;
+    if (password.match(/[^a-zA-Z0-9]/)) strength += 20;
+
+    const uniqueChars = new Set(password.split("")).size;
+    strength += Math.min(15, uniqueChars * 2);
+
+    strength = Math.min(100, strength);
+
+    strengthIndicator.style.width = `${strength}%`;
+
+    if (strength < 40) {
+        strengthIndicator.style.backgroundColor = "#ff6b6b";
+        strengthLabel.textContent = "Weak Password";
+    } else if (strength < 70) {
+        strengthIndicator.style.backgroundColor = "#ffdd57";
+        strengthLabel.textContent = "Medium Password";
+    } else {
+        strengthIndicator.style.backgroundColor = "#48c774";
+        strengthLabel.textContent = "Strong Password";
+    }
+
+    return strength;
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const passwordInput = document.getElementById("passwordInput");
+    if (passwordInput) {
+        passwordInput.addEventListener("input", function () {
+            checkPasswordStrength(this.value);
+        });
+    }
+});
+
 function generatePassword() {
     const passwordInput = document.getElementById("passwordInput");
     const chars =
         "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*_+-=.?";
     const length = Math.floor(Math.random() * 9) + 8;
     let password = "";
-    for (let i = 0; i < length; i++)
+
+    password += chars.match(/[a-z]/)[0];
+    password += chars.match(/[A-Z]/)[0];
+    password += chars.match(/[0-9]/)[0];
+    password += chars.match(/[^a-zA-Z0-9]/)[0];
+
+    for (let i = 4; i < length; i++)
         password += chars.charAt(Math.floor(Math.random() * chars.length));
+
+    password = password
+        .split("")
+        .sort(() => 0.5 - Math.random())
+        .join("");
+
     passwordInput.value = password;
+
+    checkPasswordStrength(password);
 }
 
 function togglePwd() {
