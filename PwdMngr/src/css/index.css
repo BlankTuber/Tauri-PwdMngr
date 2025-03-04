@@ -3,33 +3,33 @@
     width: var(--container-width);
     display: flex;
     flex-direction: column;
-    gap: clamp(1rem, 3vh, 2rem);
+    gap: clamp(0.8rem, 2vh, 1.5rem);
 }
 
 /* Navigation and header */
 nav {
-    width: 80%;
+    width: 90%;
     background: rgba(10, 20, 35, 0.6);
-    border-radius: clamp(8px, 1.5vw, 16px);
-    padding: clamp(1rem, 2vh, 1.5rem);
+    border-radius: clamp(6px, 1vw, 12px);
+    padding: clamp(0.8rem, 1.5vh, 1.2rem);
     backdrop-filter: blur(8px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2),
-        inset 0 2px 0 rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(66, 184, 131, 0.2);
-    margin-bottom: clamp(1rem, 3vh, 2rem);
+    margin-bottom: clamp(0.8rem, 2vh, 1.5rem);
 }
 
 nav header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: clamp(1rem, 2vh, 1.5rem);
+    margin-bottom: clamp(0.8rem, 1.5vh, 1rem);
     position: relative;
 }
 
 nav h1 {
     margin: 0;
-    font-size: clamp(1.2rem, 3vw, 2rem);
+    font-size: clamp(1.2rem, 2.5vw, 1.8rem);
     letter-spacing: 0.1em;
 }
 
@@ -39,8 +39,9 @@ nav h1 {
         var(--highlight-color),
         var(--accent-color-2)
     );
-    font-size: clamp(0.8rem, 1vw, 0.9rem);
-    min-width: clamp(125px, 15vw, 175px);
+    font-size: clamp(0.75rem, 0.9vw, 0.85rem);
+    min-width: clamp(110px, 12vw, 160px);
+    padding: clamp(0.4rem, 1vh, 0.8rem) clamp(0.8rem, 1.5vw, 1.2rem);
 }
 
 #logoutBtn {
@@ -54,36 +55,37 @@ nav h1 {
 /* Search section */
 .search-container {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.3rem;
     align-items: center;
 }
 
 #searchInput {
     flex: 1;
     margin-bottom: 0;
-    border-radius: clamp(4px, 1vh, 8px) 0 0 clamp(4px, 1vh, 8px);
+    border-radius: clamp(4px, 0.8vh, 6px) 0 0 clamp(4px, 0.8vh, 6px);
     border-right: none;
+    padding: clamp(0.5rem, 1vh, 0.8rem);
 }
 
 #searchBtn {
     background-color: var(--highlight-color);
-    padding: clamp(0.6rem, 1.5vh, 1rem);
-    border-radius: 0 clamp(4px, 1vh, 8px) clamp(4px, 1vh, 8px) 0;
+    padding: clamp(0.5rem, 1vh, 0.8rem);
+    border-radius: 0 clamp(4px, 0.8vh, 6px) clamp(4px, 0.8vh, 6px) 0;
     margin: 0;
     min-width: unset;
     box-shadow: none;
 }
 
 #filter {
-    width: clamp(120px, 20%, 200px);
+    width: clamp(100px, 15%, 180px);
     margin-bottom: 0;
     background-color: rgba(10, 22, 40, 0.7);
     border: none;
-    border-bottom: 3px solid var(--accent-color-2);
+    border-bottom: 2px solid var(--accent-color-2);
 }
 
 select {
-    flex: 0.5;
+    flex: 0.4;
     color: var(--bg-color);
 }
 
@@ -93,7 +95,7 @@ main {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: clamp(1.5rem, 3vh, 2.5rem);
+    gap: clamp(1rem, 2vh, 1.8rem);
 }
 
 /* Password list */
@@ -101,30 +103,29 @@ main {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    align-items: center;
-    gap: clamp(1rem, 2vw, 1.5rem);
-    width: clamp(50%, 90%, 95%);
+    align-items: stretch;
+    gap: clamp(0.8rem, 1.5vw, 1.2rem);
+    width: clamp(60%, 95%, 98%);
     margin: auto;
 }
 
 .password-card {
     background: rgba(10, 20, 35, 0.7);
-    border-radius: clamp(8px, 1vw, 12px);
+    border-radius: clamp(6px, 0.8vw, 10px);
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
     border: 1px solid rgba(66, 184, 131, 0.2);
     transition: all 0.3s ease;
     position: relative;
-    flex-grow: 1;
-    width: clamp(200px, 30%, 300px);
-    height: 200px;
+    width: clamp(220px, 30%, 320px);
+    height: 180px;
 }
 
 .password-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
     border-color: var(--accent-color-2);
 }
 
@@ -134,7 +135,7 @@ main {
     top: 0;
     left: 0;
     width: 100%;
-    height: 5px;
+    height: 4px;
     background: linear-gradient(
         90deg,
         var(--accent-color),
@@ -145,59 +146,69 @@ main {
 }
 
 .password-card:hover::before {
-    height: 7px;
+    height: 6px;
 }
 
 .password-header {
-    padding: clamp(1rem, 2vh, 1.5rem);
+    padding: clamp(0.8rem, 1.5vh, 1.2rem);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     background: rgba(0, 0, 0, 0.2);
 }
 
 .website {
-    font-size: clamp(1rem, 1.2vw, 1.2rem);
+    font-size: clamp(1rem, 1.1vw, 1.15rem);
     font-weight: bold;
     margin: 0;
     color: var(--contrast-color);
     margin-bottom: 0.3rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .username {
-    font-size: clamp(0.8rem, 1vw, 0.9rem);
+    font-size: clamp(0.75rem, 0.85vw, 0.85rem);
     margin: 0;
     color: var(--text-color);
     opacity: 0.9;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .password-body {
-    padding: clamp(1rem, 2vh, 1.5rem);
-    flex: 1;
+    padding: clamp(0.8rem, 1.2vh, 1rem);
+    flex: 0.7;
+    display: flex;
+    align-items: center;
 }
 
 .notes {
     margin: 0;
-    font-size: clamp(0.8rem, 1vw, 0.9rem);
-    line-height: 1.5;
+    font-size: clamp(0.7rem, 0.8vw, 0.8rem);
+    line-height: 1.4;
     color: var(--text-color);
-    opacity: 0.8;
+    opacity: 0.7;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
-    line-clamp: 3;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    max-height: 2.8em;
 }
 
 .password-footer {
-    padding: clamp(0.8rem, 1.5vh, 1.2rem);
+    padding: clamp(0.6rem, 1vh, 0.8rem);
     display: flex;
     justify-content: space-between;
     align-items: center;
     background: rgba(0, 0, 0, 0.1);
     border-top: 1px solid rgba(255, 255, 255, 0.05);
+    margin-top: auto;
 }
 
 .last-updated {
-    font-size: clamp(0.7rem, 0.8vw, 0.8rem);
+    font-size: clamp(0.65rem, 0.7vw, 0.75rem);
     margin: 0;
     color: var(--text-color);
     opacity: 0.6;
@@ -205,12 +216,12 @@ main {
 
 .actions {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.4rem;
 }
 
 .actions button {
-    font-size: clamp(0.7rem, 0.8vw, 0.8rem);
-    padding: clamp(0.3rem, 0.8vh, 0.5rem) clamp(0.8rem, 1.2vw, 1rem);
+    font-size: clamp(0.65rem, 0.75vw, 0.75rem);
+    padding: clamp(0.25rem, 0.6vh, 0.4rem) clamp(0.6rem, 1vw, 0.8rem);
     min-width: unset;
     background-color: rgba(66, 184, 131, 0.2);
     border: 1px solid rgba(66, 184, 131, 0.3);
@@ -231,20 +242,20 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: clamp(1rem, 2vw, 2rem);
-    padding: clamp(0.8rem, 1.5vh, 1.2rem);
+    gap: clamp(0.8rem, 1.5vw, 1.5rem);
+    padding: clamp(0.6rem, 1vh, 1rem);
     margin-top: auto;
 }
 
 #pagination p {
-    font-size: clamp(0.9rem, 1vw, 1rem);
+    font-size: clamp(0.8rem, 0.9vw, 0.95rem);
     margin: 0;
     color: var(--text-color);
 }
 
 .pagination-btn {
-    font-size: clamp(1rem, 1.2vw, 1.2rem);
-    padding: clamp(0.3rem, 0.8vh, 0.5rem) clamp(0.8rem, 1.2vw, 1rem);
+    font-size: clamp(0.9rem, 1.1vw, 1.1rem);
+    padding: clamp(0.25rem, 0.6vh, 0.4rem) clamp(0.6rem, 1vw, 0.8rem);
     min-width: unset;
     background: linear-gradient(
         135deg,
@@ -252,8 +263,8 @@ main {
         var(--accent-color-2)
     );
     border-radius: 50%;
-    width: clamp(2.5rem, 3vw, 3rem);
-    height: clamp(2.5rem, 3vw, 3rem);
+    width: clamp(2.2rem, 2.5vw, 2.8rem);
+    height: clamp(2.2rem, 2.5vw, 2.8rem);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -263,7 +274,7 @@ main {
 @media (max-width: 768px) {
     nav header {
         flex-direction: column;
-        gap: 1rem;
+        gap: 0.8rem;
     }
 
     nav header button {
@@ -278,20 +289,35 @@ main {
     #searchBtn,
     #filter {
         width: 100%;
-        border-radius: clamp(4px, 1vh, 8px);
+        border-radius: clamp(4px, 0.8vh, 6px);
+    }
+
+    #passwordList {
+        width: 100%;
+    }
+
+    .password-card {
+        width: calc(50% - 0.6rem);
+        min-width: 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    .password-card {
+        width: 100%;
     }
 }
 
 /* Animations for cards */
 @keyframes cardPulse {
     0% {
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
     }
     50% {
-        box-shadow: 0 10px 30px rgba(66, 184, 131, 0.3);
+        box-shadow: 0 8px 20px rgba(66, 184, 131, 0.2);
     }
     100% {
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
     }
 }
 
@@ -316,12 +342,12 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 200px;
+    height: 150px;
     width: 100%;
     color: var(--text-color);
     opacity: 0.6;
-    font-size: clamp(1rem, 1.2vw, 1.2rem);
+    font-size: clamp(0.9rem, 1vw, 1rem);
     text-align: center;
     border: 2px dashed rgba(66, 184, 131, 0.3);
-    border-radius: clamp(8px, 1vw, 12px);
+    border-radius: clamp(6px, 0.8vw, 10px);
 }
