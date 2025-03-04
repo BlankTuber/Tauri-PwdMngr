@@ -14,15 +14,13 @@ function showError(message) {
 
 function showSuccess(message) {
     const errorElement = document.getElementById("errorResponse");
-    errorElement.style.backgroundColor = "rgba(66, 184, 131, 0.7)";
     errorElement.textContent = message;
-    errorElement.classList.add("show");
+    errorElement.classList.add("show", "success");
     if (window.errorTimer) {
         clearTimeout(window.errorTimer);
     }
     window.errorTimer = setTimeout(function () {
-        errorElement.classList.remove("show");
-        errorElement.style.backgroundColor = "rgba(255, 82, 82, 0.7)";
+        errorElement.classList.remove("show", "success");
     }, 3000);
 }
 
@@ -69,6 +67,9 @@ async function addNewPassword() {
     const result = await invoke("new_password", params);
     if (result.message) {
         showSuccess(result.message);
+        setTimeout(() => {
+            location.href = "/";
+        }, 750);
     } else {
         showError(result);
     }
