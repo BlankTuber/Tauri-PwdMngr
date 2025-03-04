@@ -1,31 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Password Manager</title>
-        <link rel="stylesheet" href="/css/main.css">
-        <link rel="stylesheet" href="/css/index.css">
+        <link rel="stylesheet" href="/css/main.css" />
+        <link rel="stylesheet" href="/css/index.css" />
         <script src="/js/main.js"></script>
     </head>
     <body>
         <div class="container">
             <nav>
                 <header>
-                    <button id="addPasswordBtn" class="action-btn" onclick="newPassword()">Add Password</button>
+                    <button
+                        id="addPasswordBtn"
+                        class="action-btn"
+                        onclick="newPassword()"
+                    >
+                        Add Password
+                    </button>
                     <h1>PwdMngr</h1>
-                    <button id="logoutBtn" class="action-btn" onclick="logout()">Logout</button>
+                    <button
+                        id="logoutBtn"
+                        class="action-btn"
+                        onclick="logout()"
+                    >
+                        Logout
+                    </button>
                 </header>
                 <div class="search-container">
-                    <input type="text" name="searchInput" id="searchInput" placeholder="Search...">
+                    <input
+                        type="text"
+                        name="searchInput"
+                        id="searchInput"
+                        placeholder="Search..."
+                    />
                     <button id="searchBtn">🔍</button>
-                    <select name="filter" id="filter">
-                        <option value="all">All Categories</option>
-                        <option value="Category1">Category1</option>
-                        <option value="Category2">Category2</option>
-                        <option value="Category3">Category3</option>
-                        <option value="Category4">Category4</option>
-                    </select>
                 </div>
             </nav>
             <main>
@@ -36,27 +46,41 @@
                             <p class="username">Username</p>
                         </div>
                         <div class="password-body">
-                            <p class="notes">Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime magnam asperiores dolore sint ratione.</p>
+                            <p class="notes">
+                                Lorem ipsum dolor sit amet consectetur
+                                adipisicing elit. Maxime magnam asperiores
+                                dolore sint ratione.
+                            </p>
                         </div>
                         <div class="password-footer">
-                            <p class="last-updated"><time datetime="2025-03-01T12:12">Mar 1, 2025</time></p>
+                            <p class="last-updated">
+                                <time datetime="2025-03-01T12:12"
+                                    >Mar 1, 2025</time
+                                >
+                            </p>
                             <div class="actions">
                                 <button class="copy-btn">Copy</button>
                                 <button class="edit-btn">Edit</button>
                             </div>
                         </div>
                     </article>
-                    
+
                     <article class="password-card">
                         <div class="password-header">
                             <p class="website">github.com</p>
                             <p class="username">devUser</p>
                         </div>
                         <div class="password-body">
-                            <p class="notes">Development account credentials.</p>
+                            <p class="notes">
+                                Development account credentials.
+                            </p>
                         </div>
                         <div class="password-footer">
-                            <p class="last-updated"><time datetime="2025-02-28T15:30">Feb 28, 2025</time></p>
+                            <p class="last-updated">
+                                <time datetime="2025-02-28T15:30"
+                                    >Feb 28, 2025</time
+                                >
+                            </p>
                             <div class="actions">
                                 <button class="copy-btn">Copy</button>
                                 <button class="edit-btn">Edit</button>

@@ -2,7 +2,9 @@ use argon2::{
     password_hash::{PasswordHasher, SaltString, PasswordVerifier, PasswordHash},
     Argon2,
 };
-use ring::pbkdf2;
+use arrayref::array_ref;
+use ring::{pbkdf2, aead, rand};
+use ring::aead::{LessSafeKey, AES_256_GCM, UnboundKey, Nonce};
 use base64::{Engine as _, engine::general_purpose::URL_SAFE_NO_PAD as BASE64};
 use thiserror::Error;
 
@@ -83,7 +85,30 @@ pub fn verify_password(password: &str, stored_hash: &str) -> Result<bool, Crypto
 
 }
 
-pub fn encrypt(input: &str, user_id: &str) -> Result<String, CryptoError> {
+fn process_encryption_key(encryption_key: &str, for_encryption: bool) -> Result<LessSafeKey, CryptoError> {
+    if encryption_key.is_empty() {
+        let action = if for_encryption { "Encryption" } else { "Decryption" };
+        return Err(CryptoError::EncryptionError(format!("{} key cannot be empty", action).into()));
+    }
+
+    let key_bytes = BASE64.decode(encryption_key.as_bytes())
+        .map_err(|e| {
+            let action = if for_encryption { "Encryption" } else { "Decryption" };
+            CryptoError::EncryptionError(format!("Invalid {} key: {}", action, e))
+        })?;
+    
+    let actual_key = &key_bytes[key_bytes.len() - KEY_LEN..];
+    
+    let unbound_key = UnboundKey::new(&AES_256_GCM, actual_key)
+        .map_err(|_| {
+            let action = if for_encryption { "Encryption" } else { "Decryption" };
+            CryptoError::EncryptionError(format!("Failed to create {} key", action).into())
+        })?;
+    
+    Ok(LessSafeKey::new(unbound_key))
+}
+
+pub fn encrypt(input: &str, user_id: &str, encryption_key: &str) -> Result<String, CryptoError> {
     if input.is_empty() {
         return Err(CryptoError::EncryptionError("Input cannot be empty".into()));
     }
@@ -92,5 +117,48 @@ pub fn encrypt(input: &str, user_id: &str) -> Result<String, CryptoError> {
         return Err(CryptoError::EncryptionError("User ID cannot be empty".into()));
     }
 
-    Ok("Cool".into())
+    let key = process_encryption_key(encryption_key, true)?;
+
+    let rng = rand::SystemRandom::new();
+    let mut nonce_bytes = [0u8; 12];
+    rand::SecureRandom::fill(&rng, &mut nonce_bytes)
+        .map_err(|_| CryptoError::EncryptionError("Failed to generate nonce".into()))?;
+
+    let nonce = Nonce::assume_unique_for_key(nonce_bytes);
+
+    let mut in_out = input.as_bytes().to_vec();
+    key.seal_in_place_append_tag(nonce, aead::Aad::empty(), &mut in_out)
+        .map_err(|_| CryptoError::EncryptionError("Encryption failed!".into()))?;
+
+    let mut result = Vec::with_capacity(nonce_bytes.len() + in_out.len());
+    result.extend_from_slice(&nonce_bytes);
+    result.extend_from_slice(&in_out);
+
+    Ok(BASE64.encode(result))
+}
+
+pub fn decrypt(encrypted_data: &str, encryption_key: &str) -> Result<String, CryptoError> {
+    if encrypted_data.is_empty(){
+        return Err(CryptoError::DecryptionError("Encrypted data cannot be empty".into()));
+    }
+
+    let encrypted_bytes = BASE64.decode(encrypted_data.as_bytes())
+        .map_err(|e| CryptoError::DecryptionError(format!("Invalid encrypted data: {}", e)))?;
+
+    if encrypted_bytes.len() <= 12 {
+        return Err(CryptoError::DecryptionError("Encrypted data is too short".into()));
+    }
+
+    let key = process_encryption_key(encryption_key, false)?;
+
+    let nonce_bytes = &encrypted_bytes[0..12];
+    let nonce = Nonce::assume_unique_for_key(*array_ref![nonce_bytes, 0, 12]);
+    
+    let mut ciphertext = encrypted_bytes[12..].to_vec();
+
+    let plaintext = key.open_in_place(nonce, aead::Aad::empty(), &mut ciphertext)
+        .map_err(|_| CryptoError::DecryptionError("Decryption failed".into()))?;
+    
+    String::from_utf8(plaintext.to_vec())
+        .map_err(|_| CryptoError::DecryptionError("Decrypted data is not valid UTF-8".into()))
 }
