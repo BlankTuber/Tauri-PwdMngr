@@ -63,7 +63,7 @@ async function addNewPassword() {
         encKey,
     };
 
-    if (website_url) params.website_url = website_url;
+    if (website_url) params.websiteUrl = website_url;
     if (notes) params.notes = notes;
 
     const result = await invoke("new_password", params);

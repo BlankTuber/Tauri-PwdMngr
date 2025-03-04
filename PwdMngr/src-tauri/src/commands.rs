@@ -110,7 +110,7 @@ pub async fn logout_user(user_state: State<'_, UserState>) -> Result<JsonValue, 
 }
 
 #[tauri::command]
-pub async fn new_password(user_state: State<'_, UserState>, pool: State<'_, DatabasePool>, website: String, website_url: Option<String>, username: String, password: String, notes: Option<String>, enc_key: String) -> Result<JsonValue, String> {
+pub async fn new_password(user_state: State<'_, UserState>, pool: State<'_, DatabasePool>, website: String, username: String, password: String, website_url: Option<String>, notes: Option<String>, enc_key: String) -> Result<JsonValue, String> {
     if user_state::require_authentication(&user_state).is_err() {
         return Err("Not authenticated".into());
     }
