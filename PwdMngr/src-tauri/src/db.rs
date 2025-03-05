@@ -1,8 +1,11 @@
-use sqlx::{sqlite::SqlitePoolOptions, SqlitePool, migrate::MigrateDatabase};
+use sqlx::{migrate::MigrateDatabase, sqlite::SqlitePoolOptions, SqlitePool};
 use tauri::{AppHandle, Manager};
 
 pub async fn establish_connection(app: &AppHandle) -> Result<SqlitePool, sqlx::Error> {
-    let app_dir = app.path().app_data_dir().expect("Failed to get app directory");
+    let app_dir = app
+        .path()
+        .app_data_dir()
+        .expect("Failed to get app directory");
     std::fs::create_dir_all(&app_dir).expect("Failed to create directory");
 
     let db_path = app_dir.join("passwords.db");
@@ -12,7 +15,10 @@ pub async fn establish_connection(app: &AppHandle) -> Result<SqlitePool, sqlx::E
         sqlx::Sqlite::create_database(&db_url).await?
     }
 
-    let pool = SqlitePoolOptions::new().max_connections(5).connect(&db_url).await?;
+    let pool = SqlitePoolOptions::new()
+        .max_connections(5)
+        .connect(&db_url)
+        .await?;
 
     run_migrations(&pool).await?;
 

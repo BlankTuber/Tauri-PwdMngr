@@ -1,4 +1,6 @@
 const { invoke } = window.__TAURI__.core;
+const { openUrl } = window.__TAURI__.opener;
+const { writeText } = window.__TAURI__.clipboardManager;
 
 if (!sessionStorage.getItem("encKey")) {
     window.location.href = "/login.html";
@@ -30,9 +32,12 @@ async function loadPasswords(page) {
             passwordCard.className = "password-card";
             if (password.website_url) {
                 console.log(password.website_url);
-                passwordCard.addEventListener("click", () => {
-                    console.log("Website Found!");
-                    location.href = password.website_url;
+                passwordCard.addEventListener("dblclick", async () => {
+                    let url = password.website_url;
+                    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                        url = "https://" + url;
+                    }
+                    await openUrl(url);
                 });
             }
             passwordCard.innerHTML = `
@@ -45,33 +50,21 @@ async function loadPasswords(page) {
                 </div>
                 <div class="password-footer">
                     <p class="last-updated">
-                        <time datetime="${
-                            password.updated_at
-                        }">${formattedDate}</time>
+                        <time datetime="${password.updated_at}">${formattedDate}</time>
                     </p>
                     <div class="actions">
-                        <button class="copy-btn" onclick="copy('${
-                            password.id
-                        }-copy')">Copy</button>
-                        <button class="edit-btn" onclick="edit('${
-                            password.id
-                        }')">Edit</button>
+                        <button class="copy-btn" onclick="copy('${password.id}-copy')">Copy</button>
+                        <button class="edit-btn" onclick="edit('${password.id}')">Edit</button>
                     </div>
-                    <input type="hidden" id="${password.id}-copy" value="${
-                password.password.Ok
-            }">
-                    <input type="hidden" id="${password.id}" value="${
-                password.id
-            }">
+                    <input type="hidden" id="${password.id}-copy" value="${password.password.Ok}">
+                    <input type="hidden" id="${password.id}" value="${password.id}">
                 </div>
             `;
 
             passwordList.appendChild(passwordCard);
         });
 
-        document.querySelector(
-            "#pagination p",
-        ).textContent = `${currentPage} of ${totalPages}`;
+        document.querySelector("#pagination p").textContent = `${currentPage} of ${totalPages}`;
     } catch (error) {
         console.error("Failed to load passwords:", error);
     }
@@ -102,4 +95,13 @@ function logout() {
 
 function newPassword() {
     window.location.href = "/add-password.html";
+}
+
+async function copy(id) {
+    const input = document.getElementById(id);
+    await writeText(input.value);
+}
+
+function edit(id) {
+    window.location.href = `/edit-password.html?id=${id}`;
 }
