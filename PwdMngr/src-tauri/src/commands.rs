@@ -238,3 +238,290 @@ pub async fn get_passwords(
         "total_pages": total_pages
     }))
 }
+
+
+#[tauri::command]
+pub async fn get_password_details(
+    user_state: State<'_, UserState>,
+    pool: State<'_, DatabasePool>,
+    id: String,
+    enc_key: String,
+) -> Result<JsonValue, String> {
+    if user_state::require_authentication(&user_state).is_err() {
+        return Err("Not authenticated".into());
+    }
+
+    let user_id = user_state::get_current_user(&user_state).unwrap();
+
+    let password = sqlx::query_as::<_, PasswordRecord>(
+        "
+        SELECT id, website, website_url, encrypted_username, encrypted_password, notes, updated_at 
+        FROM passwords 
+        WHERE id = ? AND user_id = ?
+    ",
+    )
+    .bind(&id)
+    .bind(&user_id)
+    .fetch_optional(&*pool.0)
+    .await
+    .map_err(|e| format!("Failed to fetch password: {}", e))?;
+
+    match password {
+        Some(pwd) => {
+            Ok(json!({
+                "id": pwd.id,
+                "website": pwd.website,
+                "website_url": pwd.website_url,
+                "username": crypto::decrypt(&pwd.encrypted_username, &enc_key),
+                "password": crypto::decrypt(&pwd.encrypted_password, &enc_key),
+                "notes": pwd.notes,
+                "updated_at": pwd.updated_at.to_rfc3339()
+            }))
+        }
+        None => Err("Password not found".into()),
+    }
+}
+
+#[tauri::command]
+pub async fn update_password(
+    user_state: State<'_, UserState>,
+    pool: State<'_, DatabasePool>,
+    id: String,
+    website: String,
+    username: String,
+    password: String,
+    website_url: Option<String>,
+    notes: Option<String>,
+    enc_key: String,
+) -> Result<JsonValue, String> {
+    if user_state::require_authentication(&user_state).is_err() {
+        return Err("Not authenticated".into());
+    }
+
+    if website.trim().is_empty() {
+        return Err("Website cannot be empty".into());
+    }
+
+    if username.trim().is_empty() {
+        return Err("Username cannot be empty".into());
+    }
+
+    if password.trim().is_empty() {
+        return Err("Password cannot be empty".into());
+    }
+
+    let user_id = user_state::get_current_user(&user_state).unwrap();
+    let now = Utc::now();
+
+    // Check if password exists and belongs to the user
+    let existing_password = sqlx::query_scalar::<_, i64>(
+        "SELECT COUNT(*) FROM passwords WHERE id = ? AND user_id = ?"
+    )
+    .bind(&id)
+    .bind(&user_id)
+    .fetch_one(&*pool.0)
+    .await
+    .map_err(|e| format!("Failed to check password: {}", e))?;
+
+    if existing_password == 0 {
+        return Err("Password not found or you don't have permission to edit it".into());
+    }
+
+    let encrypted_username = crypto::encrypt(&username, &user_id, &enc_key)
+        .map_err(|e| format!("Failed to encrypt username: {}", e))?;
+
+    let encrypted_password = crypto::encrypt(&password, &user_id, &enc_key)
+        .map_err(|e| format!("Failed to encrypt password: {}", e))?;
+
+    sqlx::query(
+        "UPDATE passwords SET 
+        website = ?, 
+        website_url = ?, 
+        encrypted_username = ?, 
+        encrypted_password = ?, 
+        notes = ?, 
+        updated_at = ? 
+        WHERE id = ? AND user_id = ?"
+    )
+    .bind(&website)
+    .bind(&website_url)
+    .bind(&encrypted_username)
+    .bind(&encrypted_password)
+    .bind(&notes)
+    .bind(now)
+    .bind(&id)
+    .bind(&user_id)
+    .execute(&*pool.0)
+    .await
+    .map_err(|e| format!("Failed to update password: {}", e))?;
+
+    Ok(json!({
+        "message": "Password successfully updated!"
+    }))
+}
+
+#[tauri::command]
+pub async fn delete_password(
+    user_state: State<'_, UserState>,
+    pool: State<'_, DatabasePool>,
+    id: String,
+) -> Result<JsonValue, String> {
+    if user_state::require_authentication(&user_state).is_err() {
+        return Err("Not authenticated".into());
+    }
+
+    let user_id = user_state::get_current_user(&user_state).unwrap();
+
+    // Check if password exists and belongs to the user
+    let existing_password = sqlx::query_scalar::<_, i64>(
+        "SELECT COUNT(*) FROM passwords WHERE id = ? AND user_id = ?"
+    )
+    .bind(&id)
+    .bind(&user_id)
+    .fetch_one(&*pool.0)
+    .await
+    .map_err(|e| format!("Failed to check password: {}", e))?;
+
+    if existing_password == 0 {
+        return Err("Password not found or you don't have permission to delete it".into());
+    }
+
+    sqlx::query("DELETE FROM passwords WHERE id = ? AND user_id = ?")
+        .bind(&id)
+        .bind(&user_id)
+        .execute(&*pool.0)
+        .await
+        .map_err(|e| format!("Failed to delete password: {}", e))?;
+
+    Ok(json!({
+        "message": "Password successfully deleted!"
+    }))
+}
+
+#[tauri::command]
+pub async fn search_passwords(
+    user_state: State<'_, UserState>,
+    pool: State<'_, DatabasePool>,
+    search_term: String,
+    page: i32,
+    enc_key: String,
+) -> Result<JsonValue, String> {
+    if user_state::require_authentication(&user_state).is_err() {
+        return Err("Not authenticated".into());
+    }
+
+    let user_id = user_state::get_current_user(&user_state).unwrap();
+    
+    // If search term is empty, return all passwords
+    if search_term.trim().is_empty() {
+        return get_passwords(user_state, pool, page, enc_key).await;
+    }
+
+    // Use SQL LIKE for case-insensitive search with wildcards
+    let search_pattern = format!("%{}%", search_term);
+    let page_size = 6; // Should match the PAGE_SIZE in JavaScript
+    let offset = (page - 1) * page_size;
+
+    // First get the total count of matching items for pagination
+    let total_count = sqlx::query_scalar::<_, i64>(
+        "
+        SELECT COUNT(*) 
+        FROM passwords 
+        WHERE user_id = ? 
+        AND (
+            website LIKE ? 
+            OR website_url LIKE ? 
+            OR notes LIKE ?
+        )
+        "
+    )
+    .bind(&user_id)
+    .bind(&search_pattern)
+    .bind(&search_pattern)
+    .bind(&search_pattern)
+    .fetch_one(&*pool.0)
+    .await
+    .map_err(|e| format!("Failed to count search results: {}", e))?;
+
+    // Get paginated search results
+    let passwords = sqlx::query_as::<_, PasswordRecord>(
+        "
+        SELECT id, website, website_url, encrypted_username, encrypted_password, notes, updated_at 
+        FROM passwords 
+        WHERE user_id = ? 
+        AND (
+            website LIKE ? 
+            OR website_url LIKE ? 
+            OR notes LIKE ?
+        )
+        ORDER BY updated_at DESC
+        LIMIT ? OFFSET ?
+        "
+    )
+    .bind(&user_id)
+    .bind(&search_pattern)
+    .bind(&search_pattern)
+    .bind(&search_pattern)
+    .bind(page_size)
+    .bind(offset)
+    .fetch_all(&*pool.0)
+    .await
+    .map_err(|e| format!("Failed to search passwords: {}", e))?;
+
+    let total_pages = (total_count as f64 / page_size as f64).ceil() as i32;
+
+    // Process results to handle encrypted fields and build response
+    let mut password_list: Vec<JsonValue> = Vec::new();
+    
+    for password in passwords {
+        // Decrypt the fields
+        let username = crypto::decrypt(&password.encrypted_username, &enc_key)
+            .unwrap_or_else(|_| "Error decoding username".to_string());
+        
+        let decrypted_password = crypto::decrypt(&password.encrypted_password, &enc_key)
+            .unwrap_or_else(|_| "Error decoding password".to_string());
+        
+        // Check if username matches search pattern (after decryption)
+        let username_match = username.to_lowercase().contains(&search_term.to_lowercase());
+        
+        // Create the entry
+        let entry = json!({
+            "id": password.id,
+            "website": password.website,
+            "website_url": password.website_url,
+            "username": json!({"Ok": username}),
+            "password": json!({"Ok": decrypted_password}),
+            "notes": password.notes,
+            "updated_at": password.updated_at.to_rfc3339(),
+            "match_type": if username_match { "username" } else { "other" }
+        });
+        
+        password_list.push(entry);
+    }
+    
+    // Sort the list to prioritize username matches
+    password_list.sort_by(|a, b| {
+        let a_match_type = a["match_type"].as_str().unwrap_or("other");
+        let b_match_type = b["match_type"].as_str().unwrap_or("other");
+        
+        // Username matches come first
+        if a_match_type == "username" && b_match_type != "username" {
+            std::cmp::Ordering::Less
+        } else if a_match_type != "username" && b_match_type == "username" {
+            std::cmp::Ordering::Greater
+        } else {
+            // If same match type, sort by updated_at (newest first)
+            let a_date = a["updated_at"].as_str().unwrap_or("");
+            let b_date = b["updated_at"].as_str().unwrap_or("");
+            b_date.cmp(a_date)
+        }
+    });
+
+    Ok(json!({
+        "passwords": password_list,
+        "total": total_count,
+        "page": page,
+        "total_pages": total_pages,
+        "is_search_result": true
+    }))
+}

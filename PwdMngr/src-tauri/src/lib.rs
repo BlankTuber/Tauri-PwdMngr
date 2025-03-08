@@ -4,7 +4,10 @@ pub mod db;
 pub mod models;
 pub mod user_state;
 
-use commands::{get_passwords, login_user, logout_user, new_password, register_user};
+use commands::{
+    delete_password, get_password_details, get_passwords, login_user, logout_user, new_password,
+    register_user, update_password, search_passwords
+};
 
 use sqlx::SqlitePool;
 use std::sync::{Arc, Mutex};
@@ -41,7 +44,11 @@ pub fn run() {
             login_user,
             logout_user,
             new_password,
-            get_passwords
+            get_passwords,
+            get_password_details,
+            update_password,
+            delete_password,
+            search_passwords
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

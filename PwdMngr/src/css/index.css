@@ -4,6 +4,7 @@
     display: flex;
     flex-direction: column;
     gap: clamp(0.8rem, 2vh, 1.5rem);
+    min-height: 80vh; /* Minimum height to maintain layout stability */
 }
 
 /* Navigation and header */
@@ -96,6 +97,7 @@ main {
     display: flex;
     flex-direction: column;
     gap: clamp(1rem, 2vh, 1.8rem);
+    min-height: 450px; /* Minimum height to prevent layout shift */
 }
 
 /* Password list */
@@ -107,6 +109,8 @@ main {
     gap: clamp(0.8rem, 1.5vw, 1.2rem);
     width: clamp(60%, 95%, 98%);
     margin: auto;
+    min-height: 350px; /* Minimum height to prevent layout shifting */
+    position: relative; /* For loading overlay */
 }
 
 .password-card {
@@ -237,7 +241,7 @@ main {
     transform: translateY(-2px);
 }
 
-/* Pagination */
+/* Improved Pagination */
 #pagination {
     display: flex;
     justify-content: center;
@@ -245,12 +249,35 @@ main {
     gap: clamp(0.8rem, 1.5vw, 1.5rem);
     padding: clamp(0.6rem, 1vh, 1rem);
     margin-top: auto;
+    background-color: rgba(10, 20, 35, 0.4);
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(66, 184, 131, 0.2);
+    transition: all 0.3s ease;
+    min-height: 60px; /* Fixed height to prevent layout shifting */
+    height: 60px;
+}
+
+#pagination:hover {
+    background-color: rgba(10, 20, 35, 0.6);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 #pagination p {
     font-size: clamp(0.8rem, 0.9vw, 0.95rem);
     margin: 0;
     color: var(--text-color);
+    min-width: 120px; /* Minimum width to prevent layout shifting */
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.search-pagination {
+    color: var(--contrast-color) !important;
+    font-weight: bold;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    position: relative;
+    padding: 0 5px;
 }
 
 .pagination-btn {
@@ -268,44 +295,45 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    nav header {
-        flex-direction: column;
-        gap: 0.8rem;
-    }
-
-    nav header button {
-        width: 100%;
-    }
-
-    .search-container {
-        flex-direction: column;
-    }
-
-    #searchInput,
-    #searchBtn,
-    #filter {
-        width: 100%;
-        border-radius: clamp(4px, 0.8vh, 6px);
-    }
-
-    #passwordList {
-        width: 100%;
-    }
-
-    .password-card {
-        width: calc(50% - 0.6rem);
-        min-width: 150px;
-    }
+.pagination-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+    transform: translateY(-100%);
+    transition: transform 0.3s ease;
 }
 
-@media (max-width: 480px) {
-    .password-card {
-        width: 100%;
-    }
+.pagination-btn:hover::before {
+    transform: translateY(0);
+}
+
+.pagination-btn:active {
+    transform: scale(0.95);
+}
+
+.pagination-btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: linear-gradient(135deg, #4a5568, #2d3748);
+    box-shadow: none;
+}
+
+.pagination-btn.disabled:hover::before {
+    transform: translateY(-100%);
+}
+
+.pagination-btn.disabled:active {
+    transform: none;
 }
 
 /* Animations for cards */
@@ -350,4 +378,308 @@ main {
     text-align: center;
     border: 2px dashed rgba(66, 184, 131, 0.3);
     border-radius: clamp(6px, 0.8vw, 10px);
+}
+
+/* Search results styling */
+.search-status {
+    width: 100%;
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-color);
+    font-style: italic;
+    opacity: 0.7;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.no-results {
+    width: 100%;
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-color);
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    margin: 3rem 0;
+}
+
+.error-message {
+    width: 100%;
+    text-align: center;
+    padding: 1.5rem;
+    color: var(--accent-color);
+    background: rgba(255, 82, 82, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 82, 82, 0.3);
+    margin: 3rem 0;
+}
+
+/* Highlighted search terms */
+mark {
+    background-color: rgba(249, 211, 66, 0.3);
+    color: var(--contrast-color);
+    padding: 0 3px;
+    border-radius: 3px;
+    font-weight: bold;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%,
+    100% {
+        background-color: rgba(249, 211, 66, 0.3);
+    }
+    50% {
+        background-color: rgba(249, 211, 66, 0.5);
+    }
+}
+
+/* Enhance search input focus state */
+#searchInput:focus {
+    border-bottom-color: var(--contrast-color);
+    box-shadow: 0 0 0 2px rgba(249, 211, 66, 0.3),
+        inset 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Search button enhancements */
+#searchBtn {
+    transition: all 0.3s ease;
+}
+
+#searchBtn:hover {
+    background-color: var(--contrast-color);
+    transform: scale(1.05);
+}
+
+#searchBtn:active {
+    transform: scale(0.95);
+}
+
+/* Active search state indicator */
+.search-container.active-search {
+    position: relative;
+}
+
+.search-container.active-search::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: -12px;
+    width: 8px;
+    height: 8px;
+    background-color: var(--contrast-color);
+    border-radius: 50%;
+    animation: searchPulse 2s infinite;
+}
+
+@keyframes searchPulse {
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1.5);
+        opacity: 1;
+    }
+}
+
+/* Copy button success state */
+.copy-btn.copied {
+    background-color: rgba(66, 184, 131, 0.6) !important;
+    border: 1px solid rgba(66, 184, 131, 0.7) !important;
+    animation: copiedPulse 1.5s ease;
+}
+
+@keyframes copiedPulse {
+    0% {
+        transform: scale(1);
+    }
+    25% {
+        transform: scale(1.1);
+    }
+    50% {
+        transform: scale(1);
+    }
+    75% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Loading animation for password cards */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.password-card {
+    animation: fadeIn 0.3s ease forwards;
+}
+
+#passwordList .password-card:nth-child(1) {
+    animation-delay: 0.05s;
+}
+#passwordList .password-card:nth-child(2) {
+    animation-delay: 0.1s;
+}
+#passwordList .password-card:nth-child(3) {
+    animation-delay: 0.15s;
+}
+#passwordList .password-card:nth-child(4) {
+    animation-delay: 0.2s;
+}
+#passwordList .password-card:nth-child(5) {
+    animation-delay: 0.25s;
+}
+#passwordList .password-card:nth-child(6) {
+    animation-delay: 0.3s;
+}
+
+/* Loading skeleton for improved UX */
+.loading-skeleton {
+    background: linear-gradient(
+        90deg,
+        rgba(30, 45, 65, 0.6) 25%,
+        rgba(40, 55, 75, 0.6) 50%,
+        rgba(30, 45, 65, 0.6) 75%
+    );
+    background-size: 200% 100%;
+    animation: loadingSkeleton 1.5s infinite;
+    border-radius: 8px;
+}
+
+@keyframes loadingSkeleton {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Fixed height containers to prevent layout shifting */
+.password-card-skeleton {
+    width: clamp(220px, 30%, 320px);
+    height: 180px;
+    margin-bottom: 0.8rem;
+}
+
+/* Overlay for loading state */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(10, 20, 35, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    backdrop-filter: blur(3px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.loading-overlay.show {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(66, 184, 131, 0.3);
+    border-top: 4px solid var(--accent-color-2);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    nav header {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    nav header button {
+        width: 100%;
+    }
+
+    .search-container {
+        flex-direction: column;
+    }
+
+    #searchInput,
+    #searchBtn,
+    #filter {
+        width: 100%;
+        border-radius: clamp(4px, 0.8vh, 6px);
+    }
+
+    #passwordList {
+        width: 100%;
+        min-height: 200px; /* Adjusted for mobile */
+    }
+
+    .password-card {
+        width: calc(50% - 0.6rem);
+        min-width: 150px;
+    }
+
+    #pagination {
+        min-height: 50px;
+        height: 50px;
+    }
+
+    #pagination p {
+        font-size: 0.75rem;
+        min-width: 80px;
+    }
+
+    .pagination-btn {
+        width: 2rem;
+        height: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .password-card {
+        width: 100%;
+    }
+
+    main {
+        min-height: 300px;
+    }
+
+    #passwordList {
+        min-height: 220px;
+    }
+
+    #pagination p {
+        min-width: 70px;
+        font-size: 0.7rem;
+    }
 }
