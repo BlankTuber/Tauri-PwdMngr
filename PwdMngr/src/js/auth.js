@@ -61,7 +61,9 @@ async function loginUser() {
 async function registerUser() {
     const username = document.getElementById("usernameInput").value;
     const password = document.getElementById("passwordInput").value;
-    const confirmPassword = document.getElementById("confirmPasswordInput").value;
+    const confirmPassword = document.getElementById(
+        "confirmPasswordInput",
+    ).value;
     if (!username || !password) {
         showError("Username and password are required!");
         return;
@@ -86,7 +88,9 @@ async function registerUser() {
                 window.location.href = "/index.html";
             }, 1500);
         } else {
-            showError("Registration successful but failed to get encryption key");
+            showError(
+                "Registration successful but failed to get encryption key",
+            );
         }
     } catch (error) {
         showError(error.toString());
@@ -97,10 +101,13 @@ async function registerUser() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    // Check if we're on the login page
+    if (sessionStorage.getItem("encKey")) return (location.href = "/");
+
     const usernameInput = document.getElementById("usernameInput");
     const passwordInput = document.getElementById("passwordInput");
-    const confirmPasswordInput = document.getElementById("confirmPasswordInput");
+    const confirmPasswordInput = document.getElementById(
+        "confirmPasswordInput",
+    );
 
     if (usernameInput && passwordInput) {
         const handleKeyPress = function (event) {

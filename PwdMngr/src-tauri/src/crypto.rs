@@ -22,7 +22,6 @@ pub enum CryptoError {
 
     #[error("Decryption failed: {0}")]
     DecryptionError(String),
-
     #[error("Verification failed: {0}")]
     VerifyError(String),
 }
@@ -35,18 +34,25 @@ pub fn hash_password(password: &str) -> Result<String, CryptoError> {
     let mut salt_bytes = [0u8; SALT_LEN];
     ring::rand::SecureRandom::fill(&rng, &mut salt_bytes)
         .map_err(|_| CryptoError::HashingError("Failed to generate salt".into()))?;
-
-    let salt_b64 = BASE64.encode(salt_bytes);
-    let salt = SaltString::from_b64(&salt_b64)
+    
+    let salt_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    let mut salt_str = String::with_capacity(SALT_LEN);
+    
+    for byte in salt_bytes.iter() {
+        let index = (*byte as usize) % salt_chars.len();
+        salt_str.push(salt_chars.chars().nth(index).unwrap());
+    }
+    
+    let salt = SaltString::from_b64(&salt_str)
         .map_err(|e| CryptoError::HashingError(format!("Invalid salt: {}", e)))?;
-
+    
     let argon2 = Argon2::default();
-
+    
     let password_hash = argon2
         .hash_password(password.as_bytes(), &salt)
         .map_err(|e| CryptoError::HashingError(e.to_string()))?
         .to_string();
-
+    
     Ok(password_hash)
 }
 
