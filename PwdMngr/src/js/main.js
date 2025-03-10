@@ -6,7 +6,7 @@ if (!sessionStorage.getItem("encKey")) {
     window.location.href = "/login.html";
 }
 
-let currentPage = 1;
+let currentPage = 0;
 let totalPages = 1;
 let isSearchMode = false;
 let lastSearchTerm = "";
@@ -90,7 +90,7 @@ async function loadPasswords(page) {
                         !url.startsWith("http://") &&
                         !url.startsWith("https://")
                     ) {
-                        url = "https://" + url;
+                        url = "#";
                     }
                     await openUrl(url);
                 });
@@ -128,6 +128,12 @@ async function loadPasswords(page) {
 
             passwordList.appendChild(passwordCard);
         });
+
+        if (currentPage <= totalPages) {
+            document.getElementById("pagination").style.display = "flex";
+        } else {
+            document.getElementById("pagination").style.display = "none";
+        }
 
         document.querySelector(
             "#pagination p",
@@ -173,7 +179,7 @@ async function performSearch(page = 1) {
         if (response.total) {
             paginationText.textContent = `${response.total} results (Page ${currentPage} of ${totalPages})`;
         } else {
-            paginationText.textContent = `${currentPage} of ${totalPages}`;
+            paginationText.textContent = `0 results (Page 0 of 0)`;
         }
 
         if (response.passwords.length === 0) {

@@ -12,7 +12,8 @@
             {
                 "title": "pwdmngr",
                 "width": 1200,
-                "height": 750
+                "height": 750,
+                "additionalBrowserArgs": "--disable-gpu"
             }
         ],
         "security": {
