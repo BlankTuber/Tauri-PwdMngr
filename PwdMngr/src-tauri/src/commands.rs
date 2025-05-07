@@ -177,6 +177,52 @@ pub async fn new_password(
 }
 
 #[tauri::command]
+pub async fn get_all_passwords_for_export(
+    user_state: State<'_, UserState>,
+    pool: State<'_, DatabasePool>,
+    enc_key: String
+) -> Result<JsonValue, String> {
+    if user_state::require_authentication(&user_state).is_err() {
+        return Err("Not Authenticated".into());
+    }
+
+    let user_id = user_state::get_current_user(&user_state).unwrap();
+
+    let passwords = sqlx::query_as::<_, PasswordRecord>(
+        "SELECT id, website, website_url, encrypted_username, encrypted_password, notes, updated_at
+        FROM passwords
+        WHERE user_id = ?
+        ORDER BY website ASC"
+    ).bind(&user_id)
+    .fetch_all(&*pool.0)
+    .await
+    .map_err(|e| format!("Failed to fetch passwords: {}", e))?;
+
+    let password_list: Vec<JsonValue> = passwords.into_iter().map(|password| {
+        let username = crypto::decrypt(&password.encrypted_username, &enc_key).unwrap_or_else(|_| "Error decrypting username".to_string());
+
+        let decrypted_password = crypto::decrypt(&password.encrypted_password, &enc_key).unwrap_or_else(|_| "Error decrypting username".to_string());
+
+        json!({
+            "id": password.id,
+            "website": password.website,
+            "website_url": password.website_url,
+            "username": username,
+            "password": decrypted_password,
+            "notes": password.notes,
+            "updated_at": password.updated_at.to_rfc3339()
+        })
+    })
+    .collect();
+
+    Ok(json!({
+        "passwords": password_list,
+        "count": password_list.len()
+    }))
+}
+
+
+#[tauri::command]
 pub async fn get_passwords(
     user_state: State<'_, UserState>,
     pool: State<'_, DatabasePool>,
