@@ -18,6 +18,9 @@ document.addEventListener("DOMContentLoaded", function () {
     if (fileInput) {
         fileInput.addEventListener("change", handleFileSelection);
     }
+
+    // Add mobile-specific instructions if needed
+    showMobileExportInstructions();
 });
 
 // Tab switching function
@@ -147,6 +150,30 @@ function deselectAll() {
     });
 }
 
+// Function to detect if running on mobile
+function isMobileDevice() {
+    // Check if window.__TAURI__ exists first to avoid errors
+    if (!window.__TAURI__) return false;
+
+    // Try different methods of detection
+    const isPlatformAndroid =
+        window.__TAURI__?.environment?.platform === "android";
+    const isMobileUA =
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+            navigator.userAgent,
+        );
+
+    // Log for debugging
+    console.log("Platform detection:", {
+        "Tauri platform": window.__TAURI__?.environment?.platform,
+        "User Agent": navigator.userAgent,
+        "Is Android (Tauri)": isPlatformAndroid,
+        "Is Mobile (UA)": isMobileUA,
+    });
+
+    return isPlatformAndroid || isMobileUA;
+}
+
 // Export selected passwords
 async function exportPasswords() {
     try {
@@ -197,6 +224,69 @@ async function exportPasswords() {
             throw new Error("Invalid export format");
         }
 
+        // Check if running on mobile
+        const isOnMobile = isMobileDevice();
+
+        if (isOnMobile) {
+            // Use mobile-specific export approach
+            await exportForMobile(exportData, filename, mimeType, format);
+        } else {
+            // Desktop approach
+            await exportForDesktop(
+                exportData,
+                filename,
+                mimeType,
+                response.data.length,
+            );
+        }
+    } catch (error) {
+        console.error("Export error:", error);
+        showStatus(`Export failed: ${error}`, "error");
+    }
+}
+
+// Mobile-specific export approach
+async function exportForMobile(exportData, filename, mimeType, format) {
+    try {
+        // Call the Rust-side implementation to save the file
+        const result = await invoke("export_file_mobile", {
+            data: exportData,
+            filename: filename,
+            mimeType: mimeType,
+        });
+
+        if (result.success) {
+            // Show a success message
+            showStatus(
+                `
+                Export successful! ${
+                    result.message ||
+                    "The file has been exported to your device."
+                }
+            `,
+                "success",
+            );
+
+            // If we should show a dialog with options, do that
+            if (result.show_dialog) {
+                showExportOptionsDialog(result.path, filename, mimeType);
+            }
+
+            return true;
+        } else {
+            throw new Error(
+                result.error || "Unknown error during mobile export",
+            );
+        }
+    } catch (error) {
+        console.error("Mobile export error:", error);
+        throw new Error(`Mobile export failed: ${error.message}`);
+    }
+}
+
+// Desktop export approach
+async function exportForDesktop(exportData, filename, mimeType, itemCount) {
+    try {
         // Create a Blob and download link
         const blob = new Blob([exportData], { type: mimeType });
         const url = URL.createObjectURL(blob);
@@ -219,15 +309,122 @@ async function exportPasswords() {
             // Show success with download location information
             const downloadsFolder = getDefaultDownloadsFolder();
             showStatus(
-                `Successfully exported ${response.data.length} passwords to ${filename}. 
+                `Successfully exported ${itemCount} passwords to ${filename}. 
                        File saved to your downloads folder (${downloadsFolder})`,
                 "success",
             );
         }, 100);
     } catch (error) {
-        console.error("Export error:", error);
-        showStatus(`Export failed: ${error}`, "error");
+        console.error("Desktop export error:", error);
+        throw new Error(`Desktop export failed: ${error.message}`);
     }
+}
+
+// Function to show options dialog after export
+function showExportOptionsDialog(filePath, filename, mimeType) {
+    // Create modal overlay
+    const overlay = document.createElement("div");
+    overlay.className = "export-dialog-overlay";
+    overlay.style.position = "fixed";
+    overlay.style.top = "0";
+    overlay.style.left = "0";
+    overlay.style.width = "100%";
+    overlay.style.height = "100%";
+    overlay.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
+    overlay.style.display = "flex";
+    overlay.style.justifyContent = "center";
+    overlay.style.alignItems = "center";
+    overlay.style.zIndex = "9999";
+
+    // Create dialog
+    const dialog = document.createElement("div");
+    dialog.className = "export-dialog";
+    dialog.style.backgroundColor = "#16213e";
+    dialog.style.borderRadius = "10px";
+    dialog.style.padding = "20px";
+    dialog.style.width = "85%";
+    dialog.style.maxWidth = "350px";
+    dialog.style.boxShadow = "0 10px 25px rgba(0, 0, 0, 0.5)";
+    dialog.style.border = "1px solid rgba(66, 184, 131, 0.5)";
+
+    // Create dialog content
+    dialog.innerHTML = `
+        <h3 style="color: #f9d342; text-align: center; margin-top: 0; margin-bottom: 15px;">
+            File Exported Successfully
+        </h3>
+        <p style="color: #e8f1f2; margin-bottom: 20px; text-align: center;">
+            Your file has been saved as: <br>
+            <strong>${filename}</strong>
+        </p>
+        <p style="color: #e8f1f2; font-size: 0.9em; margin-bottom: 20px; text-align: center;">
+            Location: ${filePath}
+        </p>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <button id="viewFilesBtn" class="export-dialog-btn" style="
+                background: linear-gradient(135deg, #0f9eea, #42b883);
+                color: white;
+                border: none;
+                padding: 12px;
+                border-radius: 6px;
+                font-weight: bold;
+                cursor: pointer;
+            ">View in Downloads</button>
+            
+            <button id="closeDialogBtn" class="export-dialog-btn" style="
+                background: rgba(100, 100, 100, 0.3);
+                color: white;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                padding: 12px;
+                border-radius: 6px;
+                margin-top: 10px;
+                cursor: pointer;
+            ">Close</button>
+        </div>
+    `;
+
+    // Add dialog to overlay
+    overlay.appendChild(dialog);
+
+    // Add overlay to body
+    document.body.appendChild(overlay);
+
+    // Set up button event listeners
+    document
+        .getElementById("viewFilesBtn")
+        .addEventListener("click", async () => {
+            try {
+                // Use our custom function instead of the opener plugin
+                await invoke("export_file_mobile", {
+                    data: "",
+                    filename: filename,
+                    mimeType: mimeType,
+                    action: "open",
+                });
+
+                showStatus(
+                    "Please check your device's Downloads folder",
+                    "success",
+                );
+                overlay.remove();
+            } catch (err) {
+                console.error("Error accessing file:", err);
+                showStatus(
+                    "The file is saved in your Downloads folder. Please use your device's file manager to access it.",
+                    "info",
+                );
+            }
+        });
+
+    document.getElementById("closeDialogBtn").addEventListener("click", () => {
+        overlay.remove();
+    });
+
+    // Close when clicking outside the dialog
+    overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) {
+            overlay.remove();
+        }
+    });
 }
 
 // Helper function to get the likely downloads folder based on platform
@@ -294,6 +491,32 @@ function showStatus(message, type) {
     setTimeout(() => {
         statusEl.className = "ei-status";
     }, 5000);
+}
+
+// Function to show mobile-specific guidance when needed
+function showMobileExportInstructions() {
+    // Check if running on mobile
+    const isMobile = isMobileDevice();
+
+    if (isMobile) {
+        const infoBox = document.createElement("div");
+        infoBox.className = "ei-format-info mobile-info";
+        infoBox.innerHTML = `
+            <h3>Mobile Export</h3>
+            <p>When exporting on mobile, your file will be saved to:</p>
+            <ul>
+                <li>Downloads folder (easy to access with your file manager)</li>
+                <li>App documents folder (accessible via file manager)</li>
+            </ul>
+            <p>After export, you'll have options to open the file directly.</p>
+        `;
+
+        // Add this info box to the export container
+        const exportContainer = document.querySelector(".ei-export-options");
+        if (exportContainer) {
+            exportContainer.appendChild(infoBox);
+        }
+    }
 }
 
 // Handle file selection for import

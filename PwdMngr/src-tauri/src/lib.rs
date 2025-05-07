@@ -6,7 +6,8 @@ pub mod user_state;
 
 use commands::{
     delete_password, get_password_details, get_passwords, login_user, logout_user, new_password,
-    register_user, update_password, search_passwords, get_all_passwords_for_export, prepare_passwords_for_export, import_passwords_from_data
+    register_user, update_password, search_passwords, get_all_passwords_for_export, prepare_passwords_for_export, import_passwords_from_data, export_file_mobile,
+    share_file
 };
 
 use sqlx::SqlitePool;
@@ -51,7 +52,9 @@ pub fn run() {
             search_passwords,
             get_all_passwords_for_export,
             prepare_passwords_for_export,
-            import_passwords_from_data
+            import_passwords_from_data,
+            export_file_mobile,
+            share_file
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
