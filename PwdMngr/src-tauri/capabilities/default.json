@@ -9,6 +9,8 @@
         "sql:default",
         "clipboard-manager:default",
         "clipboard-manager:allow-write-text",
-        "opener:allow-open-path"
+        "opener:allow-open-path",
+        "dialog:default",
+        "fs:write-files"
     ]
 }

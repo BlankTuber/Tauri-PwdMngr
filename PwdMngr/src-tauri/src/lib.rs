@@ -6,8 +6,7 @@ pub mod user_state;
 
 use commands::{
     delete_password, get_password_details, get_passwords, login_user, logout_user, new_password,
-    register_user, update_password, search_passwords, get_all_passwords_for_export, prepare_passwords_for_export, import_passwords_from_data, export_file_mobile,
-    share_file
+    register_user, update_password, search_passwords, get_all_passwords_for_export, prepare_passwords_for_export, import_passwords_from_data
 };
 
 use sqlx::SqlitePool;
@@ -26,6 +25,8 @@ pub fn run() {
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_sql::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_fs::init())
         .setup(|app| {
             let app_handle = app.handle();
 
@@ -52,9 +53,7 @@ pub fn run() {
             search_passwords,
             get_all_passwords_for_export,
             prepare_passwords_for_export,
-            import_passwords_from_data,
-            export_file_mobile,
-            share_file
+            import_passwords_from_data
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

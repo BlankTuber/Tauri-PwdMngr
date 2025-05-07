@@ -101,7 +101,7 @@
 
 /* Custom form elements */
 .ei-select {
-    color: black;
+    color: white;
     border: 1px solid rgba(66, 184, 131, 0.5);
     border-radius: 6px;
     padding: 0.5rem 0.8rem;
@@ -357,10 +357,6 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .ei-select {
-        color: white;
-    }
-
     .ei-export-options {
         flex-direction: column;
         gap: 1rem;
