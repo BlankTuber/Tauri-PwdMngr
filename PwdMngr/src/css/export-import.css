@@ -1,0 +1,320 @@
+/* Custom styles specifically for export/import page */
+.ei-container {
+    width: clamp(300px, 90%, 1000px);
+    background-color: rgba(10, 20, 35, 0.7);
+    border-radius: 10px;
+    padding: 2rem;
+    margin: 2rem auto;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(66, 184, 131, 0.3);
+}
+
+/* Tab controls */
+.ei-tabs {
+    display: flex;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid rgba(66, 184, 131, 0.3);
+}
+
+.ei-tab-btn {
+    background: transparent;
+    color: #e8f1f2;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    position: relative;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: all 0.3s;
+}
+
+.ei-tab-btn:hover {
+    opacity: 1;
+    background-color: rgba(66, 184, 131, 0.1);
+}
+
+.ei-tab-btn.active {
+    opacity: 1;
+    color: #f9d342;
+}
+
+.ei-tab-btn.active::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 10%;
+    width: 80%;
+    height: 3px;
+    background: linear-gradient(90deg, #ff5252, #0f9eea);
+    border-radius: 3px 3px 0 0;
+}
+
+.ei-tab-content {
+    display: none;
+}
+
+.ei-tab-content.active {
+    display: block;
+}
+
+/* Custom button styling */
+.ei-btn {
+    background: rgba(66, 184, 131, 0.9);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 0.7rem 1.2rem;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    letter-spacing: 0.5px;
+    min-width: 120px;
+}
+
+.ei-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    background-color: rgba(66, 184, 131, 1);
+}
+
+.ei-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.ei-btn-primary {
+    background: linear-gradient(135deg, #0f9eea, #42b883);
+}
+
+.ei-btn-secondary {
+    background: rgba(50, 50, 70, 0.8);
+}
+
+.ei-btn-danger {
+    background: linear-gradient(135deg, #ff5252, #ff7b7b);
+}
+
+/* Custom form elements */
+.ei-select {
+    color: black; /* Use theme text color variable */
+    border: 1px solid rgba(66, 184, 131, 0.5);
+    border-radius: 6px;
+    padding: 0.5rem 0.8rem; /* Smaller padding */
+    font-size: 0.9rem; /* Smaller font */
+    width: auto;
+    min-width: 120px; /* Smaller min-width */
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+    margin-left: 0.5rem;
+}
+
+.ei-select:focus {
+    outline: none;
+    border-color: var(--highlight-color);
+    box-shadow: 0 0 0 2px rgba(15, 158, 234, 0.2);
+}
+
+.ei-select option {
+    background-color: rgba(15, 30, 50, 1);
+    color: var(--text-color);
+    padding: 0.5rem;
+}
+
+.ei-checkbox {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    border: 2px solid rgba(66, 184, 131, 0.5);
+    background-color: rgba(15, 30, 50, 0.5);
+    cursor: pointer;
+    position: relative;
+}
+
+.ei-checkbox:checked {
+    background-color: rgba(66, 184, 131, 0.7);
+}
+
+.ei-checkbox:checked::after {
+    content: "✓";
+    position: absolute;
+    color: white;
+    font-size: 16px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.ei-file-input {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    margin: 1rem 0;
+    background-color: rgba(15, 30, 50, 0.6);
+    border: 2px dashed rgba(66, 184, 131, 0.5);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.ei-file-input:hover {
+    background-color: rgba(15, 30, 50, 0.8);
+    border-color: rgba(66, 184, 131, 0.8);
+}
+
+/* Export section layout */
+.ei-export-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background-color: rgba(15, 30, 50, 0.4);
+    border-radius: 8px;
+}
+
+.ei-format-selector {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.ei-action-buttons {
+    display: flex;
+    gap: 0.8rem;
+}
+
+/* Password selection list */
+.ei-password-list {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid rgba(66, 184, 131, 0.3);
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.ei-list-header {
+    display: grid;
+    grid-template-columns: 80px 1fr 1fr 120px;
+    gap: 0.5rem;
+    padding: 1rem;
+    background-color: rgba(10, 20, 35, 0.9);
+    border-bottom: 1px solid rgba(66, 184, 131, 0.5);
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.ei-password-item {
+    display: grid;
+    grid-template-columns: 80px 1fr 1fr 120px;
+    gap: 0.5rem;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background-color 0.3s;
+}
+
+.ei-password-item:hover {
+    background-color: rgba(66, 184, 131, 0.1);
+}
+
+.ei-checkbox-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Import section */
+.ei-import-container {
+    padding: 1.5rem;
+    background-color: rgba(15, 30, 50, 0.4);
+    border-radius: 8px;
+    border: 1px solid rgba(66, 184, 131, 0.3);
+    margin-bottom: 1.5rem;
+}
+
+.ei-format-info {
+    margin: 1rem 0;
+    padding: 1rem;
+    background-color: rgba(15, 158, 234, 0.1);
+    border-radius: 6px;
+    border-left: 3px solid #0f9eea;
+}
+
+/* Preview section */
+.ei-preview-table {
+    margin-top: 1rem;
+    border: 1px solid rgba(66, 184, 131, 0.3);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.ei-preview-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    background-color: rgba(10, 20, 35, 0.8);
+    padding: 0.8rem;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(66, 184, 131, 0.5);
+}
+
+.ei-preview-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    padding: 0.8rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.ei-preview-row:nth-child(even) {
+    background-color: rgba(15, 30, 50, 0.3);
+}
+
+/* Status messages */
+.ei-status {
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 6px;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.ei-status.success {
+    background-color: rgba(66, 184, 131, 0.2);
+    border: 1px solid rgba(66, 184, 131, 0.5);
+    opacity: 1;
+}
+
+.ei-status.error {
+    background-color: rgba(255, 82, 82, 0.2);
+    border: 1px solid rgba(255, 82, 82, 0.5);
+    opacity: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .ei-export-options {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .ei-action-buttons {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .ei-list-header,
+    .ei-password-item {
+        grid-template-columns: 60px 1fr 1fr;
+    }
+
+    .ei-date-col {
+        display: none;
+    }
+}

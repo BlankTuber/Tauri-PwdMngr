@@ -571,3 +571,174 @@ pub async fn search_passwords(
         "is_search_result": true
     }))
 }
+
+#[tauri::command]
+pub async fn prepare_passwords_for_export(
+    user_state: State<'_, UserState>,
+    pool: State<'_, DatabasePool>,
+    enc_key: String,
+    selected_ids: Vec<String>,
+) -> Result<JsonValue, String> {
+    if user_state::require_authentication(&user_state).is_err() {
+        return Err("Not authenticated".into());
+    }
+
+    let user_id = user_state::get_current_user(&user_state).unwrap();
+
+    // Prepare the query with an "IN" clause for selected passwords
+    let query = format!(
+        "SELECT id, website, website_url, encrypted_username, encrypted_password, notes, updated_at 
+         FROM passwords 
+         WHERE user_id = ? {}
+         ORDER BY website ASC",
+        if !selected_ids.is_empty() {
+            format!("AND id IN ({})", selected_ids.iter().map(|_| "?").collect::<Vec<_>>().join(","))
+        } else {
+            String::new()
+        }
+    );
+
+    // Prepare the query
+    let mut query_builder = sqlx::query_as::<_, PasswordRecord>(&query)
+        .bind(&user_id);
+    
+    // Bind all selected IDs if filtering
+    if !selected_ids.is_empty() {
+        for id in &selected_ids {
+            query_builder = query_builder.bind(id);
+        }
+    }
+    
+    // Execute the query
+    let passwords = query_builder
+        .fetch_all(&*pool.0)
+        .await
+        .map_err(|e| format!("Failed to fetch passwords: {}", e))?;
+
+    // Decrypt passwords and prepare for export
+    let mut password_data = Vec::new();
+    for password in passwords {
+        let username = crypto::decrypt(&password.encrypted_username, &enc_key)
+            .unwrap_or_else(|_| "Error decoding username".to_string());
+        
+        let decrypted_password = crypto::decrypt(&password.encrypted_password, &enc_key)
+            .unwrap_or_else(|_| "Error decoding password".to_string());
+        
+        password_data.push(json!({
+            "website": password.website,
+            "username": username,
+            "password": decrypted_password,
+            "website_url": password.website_url,
+            "notes": password.notes,
+        }));
+    }
+
+    Ok(json!({
+        "success": true,
+        "data": password_data,
+        "count": password_data.len()
+    }))
+}
+
+#[tauri::command]
+pub async fn import_passwords_from_data(
+    user_state: State<'_, UserState>,
+    pool: State<'_, DatabasePool>,
+    passwords_data: Vec<serde_json::Value>,
+    enc_key: String,
+) -> Result<JsonValue, String> {
+    if user_state::require_authentication(&user_state).is_err() {
+        return Err("Not authenticated".into());
+    }
+
+    let user_id = user_state::get_current_user(&user_state).unwrap();
+    
+    if passwords_data.is_empty() {
+        return Err("No passwords data provided".into());
+    }
+    
+    // Validate passwords
+    let mut valid_passwords = Vec::new();
+    for pwd in &passwords_data {
+        if let (Some(website), Some(username), Some(password)) = (
+            pwd.get("website").and_then(|v| v.as_str()),
+            pwd.get("username").and_then(|v| v.as_str()),
+            pwd.get("password").and_then(|v| v.as_str()),
+        ) {
+            if !website.is_empty() && !username.is_empty() && !password.is_empty() {
+                valid_passwords.push(pwd);
+            }
+        }
+    }
+    
+    if valid_passwords.is_empty() {
+        return Err("No valid passwords found in the import data".into());
+    }
+    
+    // Import each valid password
+    let now = Utc::now();
+    let mut success_count = 0;
+    let mut error_count = 0;
+    
+    for pwd in valid_passwords {
+        let website = pwd["website"].as_str().unwrap();
+        let username = pwd["username"].as_str().unwrap();
+        let password = pwd["password"].as_str().unwrap();
+        let website_url = pwd.get("website_url").and_then(|v| v.as_str()).map(String::from);
+        let notes = pwd.get("notes").and_then(|v| v.as_str()).map(String::from);
+        
+        // Encrypt sensitive data
+        let encrypted_username = match crypto::encrypt(username, &user_id, &enc_key) {
+            Ok(value) => value,
+            Err(e) => {
+                error_count += 1;
+                println!("Failed to encrypt username: {}", e);
+                continue;
+            }
+        };
+        
+        let encrypted_password = match crypto::encrypt(password, &user_id, &enc_key) {
+            Ok(value) => value,
+            Err(e) => {
+                error_count += 1;
+                println!("Failed to encrypt password: {}", e);
+                continue;
+            }
+        };
+        
+        // Generate a new password ID
+        let password_id = Uuid::new_v4().to_string();
+        
+        // Insert into database
+        let result = sqlx::query(
+            "INSERT INTO passwords (id, user_id, website, website_url, encrypted_username, encrypted_password, notes, created_at, updated_at) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        )
+        .bind(&password_id)
+        .bind(&user_id)
+        .bind(&website)
+        .bind(&website_url)
+        .bind(&encrypted_username)
+        .bind(&encrypted_password)
+        .bind(&notes)
+        .bind(now)
+        .bind(now)
+        .execute(&*pool.0)
+        .await;
+        
+        match result {
+            Ok(_) => success_count += 1,
+            Err(e) => {
+                error_count += 1;
+                println!("Failed to insert password: {}", e);
+            }
+        }
+    }
+    
+    Ok(json!({
+        "success": success_count > 0,
+        "success_count": success_count,
+        "error_count": error_count,
+        "message": format!("Imported {} passwords with {} errors", success_count, error_count)
+    }))
+}
