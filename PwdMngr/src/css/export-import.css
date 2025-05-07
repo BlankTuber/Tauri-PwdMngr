@@ -1,10 +1,10 @@
 /* Custom styles specifically for export/import page */
 .ei-container {
-    width: clamp(300px, 90%, 1000px);
+    width: clamp(300px, 95%, 1000px);
     background-color: rgba(10, 20, 35, 0.7);
     border-radius: 10px;
-    padding: 2rem;
-    margin: 2rem auto;
+    padding: clamp(1rem, 4vw, 2rem);
+    margin: 1rem auto;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(66, 184, 131, 0.3);
 }
@@ -20,12 +20,14 @@
     background: transparent;
     color: #e8f1f2;
     border: none;
-    padding: 0.8rem 1.5rem;
-    font-size: 1rem;
+    padding: 0.8rem 1rem;
+    font-size: clamp(0.9rem, 3vw, 1rem);
     position: relative;
     cursor: pointer;
     opacity: 0.7;
     transition: all 0.3s;
+    flex: 1;
+    text-align: center;
 }
 
 .ei-tab-btn:hover {
@@ -63,14 +65,15 @@
     color: #fff;
     border: none;
     border-radius: 6px;
-    padding: 0.7rem 1.2rem;
-    font-size: 0.9rem;
+    padding: clamp(0.6rem, 2vh, 0.8rem) clamp(0.8rem, 3vw, 1.2rem);
+    font-size: clamp(0.85rem, 2.5vw, 0.9rem);
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     letter-spacing: 0.5px;
-    min-width: 120px;
+    min-width: 100px;
+    touch-action: manipulation;
 }
 
 .ei-btn:hover {
@@ -98,17 +101,24 @@
 
 /* Custom form elements */
 .ei-select {
-    color: black; /* Use theme text color variable */
+    color: black;
     border: 1px solid rgba(66, 184, 131, 0.5);
     border-radius: 6px;
-    padding: 0.5rem 0.8rem; /* Smaller padding */
-    font-size: 0.9rem; /* Smaller font */
+    padding: 0.5rem 0.8rem;
+    font-size: 0.9rem;
     width: auto;
-    min-width: 120px; /* Smaller min-width */
+    min-width: 120px;
     cursor: pointer;
     transition: all 0.3s;
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
     margin-left: 0.5rem;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.7rem center;
+    background-size: 1em;
+    padding-right: 2rem;
 }
 
 .ei-select:focus {
@@ -126,13 +136,14 @@
 .ei-checkbox {
     -webkit-appearance: none;
     appearance: none;
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     border-radius: 4px;
     border: 2px solid rgba(66, 184, 131, 0.5);
     background-color: rgba(15, 30, 50, 0.5);
     cursor: pointer;
     position: relative;
+    touch-action: manipulation;
 }
 
 .ei-checkbox:checked {
@@ -159,6 +170,7 @@
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s;
+    font-size: clamp(0.85rem, 2.5vw, 0.9rem);
 }
 
 .ei-file-input:hover {
@@ -175,26 +187,31 @@
     padding: 1rem;
     background-color: rgba(15, 30, 50, 0.4);
     border-radius: 8px;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
 .ei-format-selector {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.5rem;
+    flex-wrap: wrap;
 }
 
 .ei-action-buttons {
     display: flex;
-    gap: 0.8rem;
+    gap: 0.5rem;
+    flex-wrap: wrap;
 }
 
 /* Password selection list */
 .ei-password-list {
-    max-height: 400px;
+    max-height: clamp(300px, 60vh, 400px);
     overflow-y: auto;
     border: 1px solid rgba(66, 184, 131, 0.3);
     border-radius: 8px;
     margin-bottom: 1.5rem;
+    -webkit-overflow-scrolling: touch;
 }
 
 .ei-list-header {
@@ -244,6 +261,7 @@
     background-color: rgba(15, 158, 234, 0.1);
     border-radius: 6px;
     border-left: 3px solid #0f9eea;
+    font-size: clamp(0.8rem, 2.5vw, 0.9rem);
 }
 
 /* Preview section */
@@ -252,6 +270,8 @@
     border: 1px solid rgba(66, 184, 131, 0.3);
     border-radius: 6px;
     overflow: hidden;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .ei-preview-header {
@@ -274,6 +294,13 @@
     background-color: rgba(15, 30, 50, 0.3);
 }
 
+.ei-preview-more {
+    padding: 0.8rem;
+    text-align: center;
+    font-style: italic;
+    background-color: rgba(15, 30, 50, 0.3);
+}
+
 /* Status messages */
 .ei-status {
     padding: 1rem;
@@ -282,6 +309,7 @@
     text-align: center;
     opacity: 0;
     transition: opacity 0.3s;
+    word-wrap: break-word;
 }
 
 .ei-status.success {
@@ -296,8 +324,43 @@
     opacity: 1;
 }
 
+/* Loading and error states */
+.ei-loading,
+.ei-error,
+.ei-no-passwords {
+    padding: 2rem 1rem;
+    text-align: center;
+    border-radius: 6px;
+}
+
+.ei-loading {
+    background-color: rgba(15, 158, 234, 0.1);
+    color: #e8f1f2;
+}
+
+.ei-error {
+    background-color: rgba(255, 82, 82, 0.1);
+    color: #ff7b7b;
+}
+
+.ei-no-passwords {
+    background-color: rgba(249, 211, 66, 0.1);
+    color: #f9d342;
+}
+
+/* Bottom navigation */
+.ei-bottom-nav {
+    display: flex;
+    justify-content: center;
+    margin: 1rem 0;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
+    .ei-select {
+        color: white;
+    }
+
     .ei-export-options {
         flex-direction: column;
         gap: 1rem;
@@ -306,7 +369,15 @@
 
     .ei-action-buttons {
         width: 100%;
-        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .ei-action-buttons .ei-btn {
+        flex: 1;
+        min-width: auto;
+        padding: 0.7rem 0.5rem;
+        font-size: 0.85rem;
+        text-align: center;
     }
 
     .ei-list-header,
@@ -316,5 +387,117 @@
 
     .ei-date-col {
         display: none;
+    }
+
+    .ei-format-selector {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .ei-format-selector label {
+        font-size: 0.9rem;
+    }
+
+    .ei-select {
+        flex: 1;
+        margin-left: 0.5rem;
+    }
+}
+
+/* Additional optimizations for small phones */
+@media (max-width: 480px) {
+    .ei-container {
+        padding: 1rem;
+        width: 95%;
+        margin: 0.5rem auto;
+    }
+
+    .ei-tabs {
+        margin-bottom: 1rem;
+    }
+
+    .ei-tab-btn {
+        padding: 0.7rem 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .ei-list-header,
+    .ei-password-item {
+        grid-template-columns: 50px 1fr;
+        font-size: 0.85rem;
+        padding: 0.8rem 0.5rem;
+    }
+
+    .ei-username-col {
+        display: none;
+    }
+
+    .ei-preview-header,
+    .ei-preview-row {
+        grid-template-columns: 1fr 1fr;
+        font-size: 0.85rem;
+    }
+
+    .ei-preview-header div:nth-child(3),
+    .ei-preview-row div:nth-child(3) {
+        display: none;
+    }
+
+    .ei-checkbox {
+        width: 22px;
+        height: 22px;
+    }
+
+    .ei-btn {
+        font-size: 0.8rem;
+        padding: 0.6rem 0.8rem;
+    }
+
+    .ei-import-container {
+        padding: 1rem;
+    }
+
+    .ei-file-input {
+        padding: 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    .ei-format-info {
+        font-size: 0.8rem;
+        padding: 0.8rem;
+    }
+
+    .ei-format-info p {
+        margin: 0.5rem 0;
+    }
+
+    .ei-status {
+        font-size: 0.85rem;
+        padding: 0.8rem;
+    }
+}
+
+/* Ensure active states are finger-friendly on touch devices */
+@media (pointer: coarse) {
+    .ei-btn,
+    .ei-checkbox,
+    .ei-tab-btn,
+    .ei-file-input {
+        min-height: 44px; /* Apple's recommended minimum touch target size */
+    }
+
+    .ei-action-buttons {
+        gap: 0.8rem;
+    }
+
+    .ei-checkbox {
+        width: 28px;
+        height: 28px;
+    }
+
+    .ei-password-item,
+    .ei-preview-row {
+        padding: 0.8rem 0.5rem;
+        min-height: 44px;
     }
 }
