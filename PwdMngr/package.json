@@ -1,18 +1,18 @@
 {
-  "name": "pwdmngr",
-  "private": true,
-  "version": "0.1.0",
-  "type": "module",
-  "scripts": {
-    "tauri": "__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia tauri"
-  },
-  "devDependencies": {
-    "@tauri-apps/cli": "^2"
-  },
-  "dependencies": {
-    "@tauri-apps/plugin-clipboard-manager": "^2.2.1",
-    "@tauri-apps/plugin-fs": "^2.2.1",
-    "@tauri-apps/plugin-opener": "^2.2.6",
-    "@tauri-apps/plugin-sql": "^2.2.0"
-  }
+    "name": "pwdmngr",
+    "private": true,
+    "version": "0.2.0",
+    "type": "module",
+    "scripts": {
+        "tauri": "__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia tauri"
+    },
+    "devDependencies": {
+        "@tauri-apps/cli": "^2"
+    },
+    "dependencies": {
+        "@tauri-apps/plugin-clipboard-manager": "^2.2.1",
+        "@tauri-apps/plugin-fs": "^2.2.1",
+        "@tauri-apps/plugin-opener": "^2.2.6",
+        "@tauri-apps/plugin-sql": "^2.2.0"
+    }
 }
